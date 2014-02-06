@@ -1,0 +1,3 @@
+syncserver.ini
+syncserver.wsgi
+syncserver/tests.ini

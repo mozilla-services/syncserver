@@ -1,0 +1,8 @@
+*.pyc
+*.mako.py
+local
+*.egg-info
+*.swp
+\.coverage
+*~
+nosetests.xml
