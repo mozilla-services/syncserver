@@ -18,6 +18,7 @@ def includeme(config):
     public_url = settings.get("syncserver.public_url")
     if public_url is None:
         raise RuntimeError("you much configure syncserver.public_url")
+    public_url = public_url.rstrip("/")
     secret = settings.get("syncserver.secret")
     if secret is None:
         secret = os.urandom(32).encode("hex")
@@ -28,10 +29,12 @@ def includeme(config):
     # Configure app-specific defaults based on top-level configuration.
     settings.pop("config", None)
     if "tokenserver.backend" not in settings:
-        # Default to sql node-assignment backend
+        # Default to our simple static node-assignment backend
         settings["tokenserver.backend"] =\
-            "tokenserver.assignment.sqlnode.SQLNodeAssignment"
+            "syncserver.staticnode.StaticNodeAssignment"
         settings["tokenserver.sqluri"] = sqluri
+        settings["tokenserver.node_url"] = public_url
+        settings["endpoints.sync-1.5"] = "{node}/storage/1.5/{uid}"
     if "tokenserver.applications" not in settings:
         # Default to just the sync-1.5 application
         settings["tokenserver.applications"] = "sync-1.5"
@@ -55,13 +58,19 @@ def includeme(config):
         settings["browserid.backend"] = "tokenserver.verifiers.RemoteVerifier"
         settings["browserid.audiences"] = public_url
     if "metlog.backend" not in settings:
-        # Default to logging to stdout
+        # Default to capturing metlog output in memory.
+        # In other words, stop of from being so damn chatty on stdout.
         settings["metlog.backend"] = "mozsvc.metrics.MetlogPlugin"
+        settings["metlog.sender_class"] = "metlog.senders.DebugCaptureSender"
         settings["metlog.enabled"] = True
-        settings["metlog.sender_class"] = "metlog.senders.StdOutSender"
     if "cef.use" not in settings:
-        # Default to no CEF logging
+        # Default to sensible CEF logging settings
         settings["cef.use"] = False
+        settings["cef.file"] = "syslog"
+        settings["cef.vendor"] = "mozilla"
+        settings["cef.version"] = 0
+        settings["cef.device_version"] = 0
+        settings["cef.product"] = "syncserver"
 
     # Include the relevant sub-packages.
     config.include("syncstorage", route_prefix="/storage")
