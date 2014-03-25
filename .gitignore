@@ -6,3 +6,4 @@ local
 \.coverage
 *~
 nosetests.xml
+syncserver.db
