@@ -24,7 +24,8 @@ def includeme(config):
         secret = os.urandom(32).encode("hex")
     sqluri = settings.get("syncserver.sqluri")
     if sqluri is None:
-        sqluri = "sqlite:///:memory:"
+        rootdir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        sqluri = "sqlite:///" + os.path.join(rootdir, "syncserver.db")
 
     # Configure app-specific defaults based on top-level configuration.
     settings.pop("config", None)
