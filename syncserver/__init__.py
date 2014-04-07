@@ -36,6 +36,9 @@ def includeme(config):
         settings["tokenserver.sqluri"] = sqluri
         settings["tokenserver.node_url"] = public_url
         settings["endpoints.sync-1.5"] = "{node}/storage/1.5/{uid}"
+    if "tokenserver.monkey_patch_gevent" not in settings:
+        # Default to no gevent monkey-patching
+        settings["tokenserver.monkey_patch_gevent"] = False
     if "tokenserver.applications" not in settings:
         # Default to just the sync-1.5 application
         settings["tokenserver.applications"] = "sync-1.5"
