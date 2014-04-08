@@ -1,4 +1,5 @@
-VIRTUALENV = virtualenv
+SYSTEMPYTHON = `which python2 python | head -n 1`
+VIRTUALENV = virtualenv --python=$(SYSTEMPYTHON)
 PYTHON = local/bin/python
 NOSE = local/bin/nosetests -s
 FLAKE8 = local/bin/flake8
