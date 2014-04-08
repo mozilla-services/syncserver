@@ -12,6 +12,7 @@ XXX TODO: move this into the tokenserver repo.
 
 """
 import time
+import urlparse
 from mozsvc.exceptions import BackendError
 
 from sqlalchemy import Column, Integer, String, BigInteger, Index
@@ -101,8 +102,23 @@ class StaticNodeAssignment(object):
     def __init__(self, sqluri, node_url, **kw):
         self.sqluri = sqluri
         self.node_url = node_url
-        self._engine = create_engine(sqluri, poolclass=QueuePool,
-                                     pool_size=1, max_overflow=0)
+        self.driver = urlparse.urlparse(sqluri).scheme.lower()
+        sqlkw = {
+            "logging_name": "syncserver",
+            "connect_args": {},
+            "poolclass": QueuePool,
+            "pool_reset_on_return": True,
+        }
+        if self.driver == "sqlite":
+            # We must mark it as safe to share sqlite connections between
+            # threads.  The pool will ensure there's on race conditions.
+            sqlkw["connect_args"]["check_same_thread"] = False
+            # If using a :memory: database, we must use a QueuePool of size
+            # 1 so that a single connection is shared by all threads.
+            if urlparse.urlparse(sqluri).path.lower() in ("/", "/:memory:"):
+                sqlkw["pool_size"] = 1
+                sqlkw["max_overflow"] = 0
+        self._engine = create_engine(sqluri, **sqlkw)
         users.create(self._engine, checkfirst=True)
 
     def get_user(self, service, email):
