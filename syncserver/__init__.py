@@ -65,7 +65,7 @@ def includeme(config):
         # Default to capturing metlog output in memory.
         # In other words, stop of from being so damn chatty on stdout.
         settings["metlog.backend"] = "mozsvc.metrics.MetlogPlugin"
-        settings["metlog.sender_class"] = "metlog.senders.DebugCaptureSender"
+        settings["metlog.sender_class"] = "metlog.senders.StdOutSender"
         settings["metlog.enabled"] = True
     if "cef.use" not in settings:
         # Default to sensible CEF logging settings
