@@ -146,7 +146,7 @@ class StaticNodeAssignment(object):
         finally:
             res.close()
 
-    def create_user(self, service, email, generation=0, client_state=''):
+    def allocate_user(self, service, email, generation=0, client_state=''):
         params = {
             'service': service, 'email': email, 'generation': generation,
             'client_state': client_state, 'timestamp': get_timestamp()
