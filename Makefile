@@ -1,39 +1,39 @@
 SYSTEMPYTHON = `which python2 python | head -n 1`
 VIRTUALENV = virtualenv --python=$(SYSTEMPYTHON)
-PYTHON = local/bin/python
-NOSE = local/bin/nosetests -s
-FLAKE8 = local/bin/flake8
-PIP = local/bin/pip
-PIP_CACHE = /tmp/pip-cache.${USER}
-BUILD_TMP = /tmp/syncstorage-build.${USER}
-PYPI = https://pypi.python.org/simple
-INSTALL = $(PIP) install -U -i $(PYPI)
+ENV = ./local
+TOOLS := $(addprefix $(ENV)/bin/,flake8 nosetests)
 
-.PHONY: all build test serve clean
+.PHONY: all
+all: build test
 
-all:	build test
+.PHONY: build
+build: | $(ENV)
+$(ENV):
+	$(VIRTUALENV) --no-site-packages $(ENV)
+	$(ENV)/bin/pip install -r requirements.txt
+	$(ENV)/bin/python ./setup.py develop
 
-build:
-	$(VIRTUALENV) --no-site-packages --distribute ./local
-	$(INSTALL) --upgrade Distribute
-	$(INSTALL) pip
-	$(INSTALL) nose
-	$(INSTALL) flake8
-	$(INSTALL) -r requirements.txt
-	$(PYTHON) ./setup.py develop
+.PHONY: test
+test: | $(TOOLS)
+	$(ENV)/bin/flake8 ./syncserver
+	$(ENV)/bin/nosetests -s syncstorage.tests
+	# Tokenserver tests currently broken due to incorrect file paths
+	# $(ENV)/bin/nosetests -s tokenserver.tests
+	
+	# Test against a running server
+	$(ENV)/bin/pserve syncserver/tests.ini & SERVER_PID=$$!; \
+	sleep 2; \
+	$(ENV)/bin/python -m syncstorage.tests.functional.test_storage \
+		--use-token-server http://localhost:5000/token/1.0/sync/1.5; \
+	kill $$SERVER_PID
 
-test:
-	# Basic syntax and sanity checks.
-	$(FLAKE8) ./syncserver
-	# Testcases from syncstorage app
-	$(NOSE) syncstorage.tests
-	# Testcases from tokenserver app; broken due to incorrect file paths
-	#$(NOSE) tokenserver.tests
-	# Live tests against a running server.
-	./local/bin/pserve syncserver/tests.ini & SERVER_PID=$$! ; sleep 2 ; ./local/bin/python -m syncstorage.tests.functional.test_storage --use-token-server http://localhost:5000/token/1.0/sync/1.5 ; kill $$SERVER_PID
+$(TOOLS): | $(ENV)
+	$(ENV)/bin/pip install nose flake8
 
-serve:
-	./local/bin/pserve ./syncserver.ini
+.PHONY: serve
+serve: | $(ENV)
+	$(ENV)/bin/pserve ./syncserver.ini
 
+.PHONY: clean
 clean:
-	rm -rf ./local
+	rm -rf $(ENV)
