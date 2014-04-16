@@ -4,7 +4,7 @@ ENV = ./local
 TOOLS := $(addprefix $(ENV)/bin/,flake8 nosetests)
 
 .PHONY: all
-all: build test
+all: build
 
 .PHONY: build
 build: | $(ENV)
