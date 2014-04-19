@@ -62,8 +62,7 @@ def includeme(config):
         settings["browserid.backend"] = "tokenserver.verifiers.RemoteVerifier"
         settings["browserid.audiences"] = public_url
     if "metlog.backend" not in settings:
-        # Default to capturing metlog output in memory.
-        # In other words, stop of from being so damn chatty on stdout.
+        # Default to sending metlog output to stdout.
         settings["metlog.backend"] = "mozsvc.metrics.MetlogPlugin"
         settings["metlog.sender_class"] = "metlog.senders.StdOutSender"
         settings["metlog.enabled"] = True
