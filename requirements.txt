@@ -49,7 +49,6 @@ zope.deprecation==4.1.0
 zope.event==4.0.2
 zope.interface==4.0.5
 https://argparse.googlecode.com/files/argparse-1.2.1.tar.gz
-http://github.com/mozilla-services/mozservices/archive/master.zip
-https://github.com/mozilla-services/wimms/archive/master.zip
-https://github.com/mozilla-services/tokenserver/archive/master.zip
-http://github.com/mozilla-services/server-syncstorage/archive/master.zip
+http://github.com/mozilla-services/mozservices/archive/e079f9d1c9e2062c42213a0b53c6227ffcc32321.zip
+https://github.com/mozilla-services/tokenserver/archive/1.2.5.zip
+http://github.com/mozilla-services/server-syncstorage/archive/1.5.3.zip
