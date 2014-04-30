@@ -8,7 +8,7 @@ all: build
 
 .PHONY: build
 build: | $(ENV)
-$(ENV):
+$(ENV): requirements.txt
 	$(VIRTUALENV) --no-site-packages $(ENV)
 	$(ENV)/bin/pip install -r requirements.txt
 	$(ENV)/bin/python ./setup.py develop
