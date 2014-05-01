@@ -70,4 +70,4 @@ Questions, Feedback
 -------------------
 
 - IRC channel: #sync. See http://irc.mozilla.org/
-- Mailing list: https://mail.mozilla.org/admin/services-dev
+- Mailing list: https://mail.mozilla.org/listinfo/services-dev
