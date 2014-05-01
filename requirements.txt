@@ -4,6 +4,6 @@ requests==2.2.1
 simplejson==3.4
 SQLAlchemy==0.9.4
 unittest2==0.5.1
-http://github.com/mozilla-services/mozservices/archive/e079f9d1c9e2062c42213a0b53c6227ffcc32321.zip
+http://github.com/mozilla-services/mozservices/archive/825cae97e99d1128a07ad8c73dcdc5764562b536.zip
 https://github.com/mozilla-services/tokenserver/archive/31eaa57797283b5cd4da5a93450638be9059d1dc.zip
 http://github.com/mozilla-services/server-syncstorage/archive/1.5.3.zip
