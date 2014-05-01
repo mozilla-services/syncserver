@@ -3,7 +3,11 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+from urlparse import urlparse
+
 from pyramid.response import Response
+from pyramid.events import NewRequest, subscriber
+
 import mozsvc.config
 
 
@@ -19,6 +23,8 @@ def includeme(config):
     if public_url is None:
         raise RuntimeError("you much configure syncserver.public_url")
     public_url = public_url.rstrip("/")
+    settings["syncserver.public_url"] = public_url
+
     secret = settings.get("syncserver.secret")
     if secret is None:
         secret = os.urandom(32).encode("hex")
@@ -76,6 +82,7 @@ def includeme(config):
         settings["cef.product"] = "syncserver"
 
     # Include the relevant sub-packages.
+    config.scan("syncserver")
     config.include("syncstorage", route_prefix="/storage")
     config.include("tokenserver", route_prefix="/token")
 
@@ -85,6 +92,21 @@ def includeme(config):
 
     config.add_route('itworks', '/')
     config.add_view(itworks, route_name='itworks')
+
+
+@subscriber(NewRequest)
+def fixup_script_name(event):
+    """Event-listener to fix up SCRIPT_NAME based on public_url setting.
+
+    This is a simple little trick to avoid futzing with configuration in
+    multiple places.  The public_url setting tells us exactly what the root
+    URL of the app should be, so we can use it to infer the proper value of
+    SCRIPT_NAME without depending on it being configured in the WSGI server.
+    """
+    request = event.request
+    public_url = request.registry.settings["syncserver.public_url"]
+    if not request.script_name:
+        request.script_name = urlparse(public_url).path.rstrip("/")
 
 
 def get_configurator(global_config, **settings):
