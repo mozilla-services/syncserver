@@ -52,6 +52,10 @@ def includeme(config):
         # Default to a single fixed signing secret
         settings["tokenserver.secrets.backend"] = "mozsvc.secrets.FixedSecrets"
         settings["tokenserver.secrets.secrets"] = [secret]
+    if "tokenserver.allow_new_users" not in settings:
+        allow_new_users = settings.get("syncserver.allow_new_users")
+        if allow_new_users is not None:
+            settings["tokenserver.allow_new_users"] = allow_new_users
     if "hawkauth.secrets.backend" not in settings:
         # Default to the same secrets backend as the tokenserver
         for key in settings.keys():
