@@ -11,7 +11,7 @@ from ConfigParser import NoSectionError
 # detecting if virtualenv was used in this dir
 _CURDIR = os.path.dirname(os.path.abspath(__file__))
 _PY_VER = sys.version.split()[0][:3]
-_SITE_PKG = os.path.join(_CURDIR, 'lib', 'python' + _PY_VER, 'site-packages')
+_SITE_PKG = os.path.join(_CURDIR, 'local', 'lib', 'python' + _PY_VER, 'site-packages')
 
 # adding virtualenv's site-package and ordering paths
 saved = sys.path[:]
