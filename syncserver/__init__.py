@@ -3,7 +3,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-from urlparse import urlparse
+from urlparse import urlparse, urlunparse
 
 from pyramid.response import Response
 from pyramid.events import NewRequest, subscriber
@@ -68,9 +68,10 @@ def includeme(config):
         settings["storage.sqluri"] = sqluri
         settings["storage.create_tables"] = True
     if "browserid.backend" not in settings:
-        # Default to remote verifier, with public_url as only audience
+        # Default to remote verifier, with base of public_url as only audience
+        audience = urlunparse(urlparse(public_url)._replace(path=""))
         settings["browserid.backend"] = "tokenserver.verifiers.RemoteVerifier"
-        settings["browserid.audiences"] = public_url
+        settings["browserid.audiences"] = audience
     if "metlog.backend" not in settings:
         # Default to sending metlog output to stdout.
         settings["metlog.backend"] = "mozsvc.metrics.MetlogPlugin"
