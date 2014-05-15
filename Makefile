@@ -3,6 +3,11 @@ VIRTUALENV = virtualenv --python=$(SYSTEMPYTHON)
 ENV = ./local
 TOOLS := $(addprefix $(ENV)/bin/,flake8 nosetests)
 
+# Hackety-hack around OSX system python bustage.
+# The need for this should go away with a future osx/xcode update.
+ARCHFLAGS = -Wno-error=unused-command-line-argument-hard-error-in-future
+INSTALL = ARCHFLAGS=$(ARCHFLAGS) $(ENV)/bin/pip install
+
 .PHONY: all
 all: build
 
@@ -10,7 +15,7 @@ all: build
 build: | $(ENV)
 $(ENV): requirements.txt
 	$(VIRTUALENV) --no-site-packages $(ENV)
-	$(ENV)/bin/pip install -r requirements.txt
+	$(INSTALL) -r requirements.txt
 	$(ENV)/bin/python ./setup.py develop
 	touch $(ENV)
 
@@ -29,7 +34,7 @@ test: | $(TOOLS)
 	kill $$SERVER_PID
 
 $(TOOLS): | $(ENV)
-	$(ENV)/bin/pip install nose flake8
+	$(INSTALL) nose flake8
 
 .PHONY: serve
 serve: | $(ENV)
