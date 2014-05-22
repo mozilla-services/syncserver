@@ -3,6 +3,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import logging
 from urlparse import urlparse, urlunparse
 
 from pyramid.response import Response
@@ -72,19 +73,11 @@ def includeme(config):
         audience = urlunparse(urlparse(public_url)._replace(path=""))
         settings["browserid.backend"] = "tokenserver.verifiers.RemoteVerifier"
         settings["browserid.audiences"] = audience
-    if "metlog.backend" not in settings:
-        # Default to sending metlog output to stdout.
-        settings["metlog.backend"] = "mozsvc.metrics.MetlogPlugin"
-        settings["metlog.sender_class"] = "metlog.senders.StdOutSender"
-        settings["metlog.enabled"] = True
-    if "cef.use" not in settings:
-        # Default to sensible CEF logging settings
-        settings["cef.use"] = False
-        settings["cef.file"] = "syslog"
-        settings["cef.vendor"] = "mozilla"
-        settings["cef.version"] = 0
-        settings["cef.device_version"] = 0
-        settings["cef.product"] = "syncserver"
+    if "loggers" not in settings:
+        # Default to basic logging config.
+        root_logger = logging.getLogger("")
+        if not root_logger.handlers:
+            logging.basicConfig(level=logging.INFO)
 
     # Include the relevant sub-packages.
     config.scan("syncserver")

@@ -27,7 +27,7 @@ test: | $(TOOLS)
 	# $(ENV)/bin/nosetests -s tokenserver.tests
 	
 	# Test against a running server
-	$(ENV)/bin/pserve syncserver/tests.ini & SERVER_PID=$$!; \
+	$(ENV)/bin/pserve syncserver/tests.ini 2> /dev/null & SERVER_PID=$$!; \
 	sleep 2; \
 	$(ENV)/bin/python -m syncstorage.tests.functional.test_storage \
 		--use-token-server http://localhost:5000/token/1.0/sync/1.5; \
