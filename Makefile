@@ -12,12 +12,12 @@ INSTALL = ARCHFLAGS=$(ARCHFLAGS) $(ENV)/bin/pip install
 all: build
 
 .PHONY: build
-build: | $(ENV)
-$(ENV): requirements.txt
+build: | $(ENV)/COMPLETE
+$(ENV)/COMPLETE: requirements.txt
 	$(VIRTUALENV) --no-site-packages $(ENV)
 	$(INSTALL) -r requirements.txt
 	$(ENV)/bin/python ./setup.py develop
-	touch $(ENV)
+	touch $(ENV)/COMPLETE
 
 .PHONY: test
 test: | $(TOOLS)
@@ -33,11 +33,11 @@ test: | $(TOOLS)
 		--use-token-server http://localhost:5000/token/1.0/sync/1.5; \
 	kill $$SERVER_PID
 
-$(TOOLS): | $(ENV)
+$(TOOLS): | $(ENV)/COMPLETE
 	$(INSTALL) nose flake8
 
 .PHONY: serve
-serve: | $(ENV)
+serve: | $(ENV)/COMPLETE
 	$(ENV)/bin/pserve ./syncserver.ini
 
 .PHONY: clean
