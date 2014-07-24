@@ -10,7 +10,8 @@ MAINTAINER Dan Callahan <dan.callahan@gmail.com>
 
 # Base system setup
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && apt-get install --no-install-recommends -y \
     vim locales \
     && apt-get clean
 
