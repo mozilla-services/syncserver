@@ -25,7 +25,6 @@ RUN useradd --create-home app
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     ca-certificates \
-    curl \
     build-essential \
     libzmq-dev \
     python-dev \
@@ -35,10 +34,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
 USER app
 
 RUN mkdir -p /home/app/syncserver
+ADD ./ /home/app/syncserver
 WORKDIR /home/app/syncserver
-
-RUN curl -L https://github.com/mozilla-services/syncserver/tarball/master |\
-    tar xzf - --strip-components=1
 
 RUN make build
 
