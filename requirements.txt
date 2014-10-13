@@ -7,3 +7,6 @@ unittest2==0.5.1
 https://github.com/mozilla-services/mozservices/archive/e00e1b68130423ad98d0f6185655bde650443da8.zip
 https://github.com/mozilla-services/tokenserver/archive/d7e513e8a4f5c588b70d685a8df1d2e508c341c0.zip
 http://github.com/mozilla-services/server-syncstorage/archive/1.5.5.zip
+# Newer releases of configparser have b/w compat bug:
+# https://github.com/mozilla-services/syncserver/issues/39
+configparser==3.3.0r2
