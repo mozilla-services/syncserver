@@ -11,6 +11,8 @@ from pyramid.events import NewRequest, subscriber
 
 import mozsvc.config
 
+logger = logging.getLogger("syncserver")
+
 
 def includeme(config):
     """Install SyncServer application into the given Pyramid configurator."""
@@ -93,18 +95,35 @@ def includeme(config):
 
 
 @subscriber(NewRequest)
-def fixup_script_name(event):
-    """Event-listener to fix up SCRIPT_NAME based on public_url setting.
+def reconcile_wsgi_environ_with_public_url(event):
+    """Event-listener that checks and tweaks WSGI environ based on public_url.
 
-    This is a simple little trick to avoid futzing with configuration in
-    multiple places.  The public_url setting tells us exactly what the root
-    URL of the app should be, so we can use it to infer the proper value of
-    SCRIPT_NAME without depending on it being configured in the WSGI server.
+    This is a simple trick to help ensure that the configured public_url
+    matches the actual deployed address.  It fixes fixes parts of the WSGI
+    environ where it makes sense (e.g. SCRIPT_NAME) and warns about any parts
+    that seem obviously mis-configured (e.g. http:// versus https://).
+
+    It's very important to get public_url and WSGI environ matching exactly,
+    since they're used for browserid audience checking and HAWK signature
+    validation, so mismatches can easily cause strange and cryptic errors.
     """
     request = event.request
     public_url = request.registry.settings["syncserver.public_url"]
+    p_public_url = urlparse(public_url)
+    # If we don't have a SCRIPT_NAME, take it from the public_url.
+    # This is often the case if we're behind e.g. an nginx proxy that
+    # is serving us at some sub-path.
     if not request.script_name:
-        request.script_name = urlparse(public_url).path.rstrip("/")
+        request.script_name = p_public_url.path.rstrip("/")
+    # Log a noisy error if the application url is different to what we'd
+    # expect based on public_url setting.
+    application_url = request.application_url
+    if public_url != application_url:
+        msg = "The public_url setting does not match the application url.\n"
+        msg += "This is likely to cause authentication failures!\n"
+        msg += "    public_url setting is: %s\n" % (public_url,)
+        msg += "    application url is:    %s\n" % (application_url,)
+        logger.error(msg)
 
 
 def get_configurator(global_config, **settings):
