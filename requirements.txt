@@ -1,4 +1,5 @@
 cornice==0.16.2
+gunicorn==19.1.1
 pyramid==1.5
 requests==2.2.1
 simplejson==3.4
