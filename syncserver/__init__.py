@@ -7,9 +7,12 @@ import logging
 from urlparse import urlparse, urlunparse
 
 from pyramid.response import Response
+from pyramid.httpexceptions import HTTPError
 from pyramid.events import NewRequest, subscriber
 
 import mozsvc.config
+
+from tokenserver.util import _JSONError
 
 logger = logging.getLogger("syncserver")
 
@@ -120,10 +123,11 @@ def reconcile_wsgi_environ_with_public_url(event):
     application_url = request.application_url
     if public_url != application_url:
         msg = "The public_url setting does not match the application url.\n"
-        msg += "This is likely to cause authentication failures!\n"
+        msg += "This will almost certainly cause authentication failures!\n"
         msg += "    public_url setting is: %s\n" % (public_url,)
         msg += "    application url is:    %s\n" % (application_url,)
         logger.error(msg)
+        raise _JSONError([msg], status_code=500)
 
 
 def get_configurator(global_config, **settings):
