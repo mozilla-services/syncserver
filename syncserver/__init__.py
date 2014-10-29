@@ -7,7 +7,6 @@ import logging
 from urlparse import urlparse, urlunparse
 
 from pyramid.response import Response
-from pyramid.httpexceptions import HTTPError
 from pyramid.events import NewRequest, subscriber
 
 import mozsvc.config
