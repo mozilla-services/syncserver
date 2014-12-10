@@ -34,7 +34,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
 USER app
 
 RUN mkdir -p /home/app/syncserver
-ADD ./ /home/app/syncserver
+ADD Makefile *.ini *.wsgi *.rst *.txt *.py /home/app/syncserver/
+ADD ./syncserver/ /home/app/syncserver/syncserver/
 WORKDIR /home/app/syncserver
 
 RUN make build
