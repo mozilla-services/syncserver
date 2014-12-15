@@ -8,7 +8,7 @@ TOOLS := $(addprefix $(ENV)/bin/,flake8 nosetests)
 ARCHFLAGS = -Wno-error=unused-command-line-argument-hard-error-in-future
 
 # Hackety-hack around errors duing compile of ultramemcached.
-CFLAGS = -Wno-error
+CFLAGS = "-Wno-error -Wno-error=format-security"
 
 INSTALL = CFLAGS=$(CFLAGS) ARCHFLAGS=$(ARCHFLAGS) $(ENV)/bin/pip install
 
