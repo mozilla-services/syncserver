@@ -118,6 +118,9 @@ class StaticNodeAssignment(object):
             if urlparse.urlparse(sqluri).path.lower() in ("/", "/:memory:"):
                 sqlkw["pool_size"] = 1
                 sqlkw["max_overflow"] = 0
+        if "mysql" in self.driver:
+            # Guard against the db closing idle conections.
+            sqlkw["pool_recycle"] = 3600
         self._engine = create_engine(sqluri, **sqlkw)
         users.create(self._engine, checkfirst=True)
 
