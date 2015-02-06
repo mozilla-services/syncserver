@@ -117,6 +117,14 @@ def reconcile_wsgi_environ_with_public_url(event):
     # is serving us at some sub-path.
     if not request.script_name:
         request.script_name = p_public_url.path.rstrip("/")
+    # If the public_url claims we're on a non-standard port but the environ
+    # says we're on a standard port, assume the public_url is correct.
+    # This is often the case with e.g. apache mod_wsgi.
+    if p_public_url.port not in (None, 80, 443):
+        port_str = str(p_public_url.port)
+        if request.host_port != port_str:
+            if request.host_port in (None, "80", "443"):
+                request.host = p_public_url.netloc
     # Log a noisy error if the application url is different to what we'd
     # expect based on public_url setting.
     application_url = request.application_url
