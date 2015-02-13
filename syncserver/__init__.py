@@ -117,24 +117,27 @@ def reconcile_wsgi_environ_with_public_url(event):
     # is serving us at some sub-path.
     if not request.script_name:
         request.script_name = p_public_url.path.rstrip("/")
-    # If the public_url claims we're on a non-standard port but the environ
-    # says we're on a standard port, assume the public_url is correct.
-    # This is often the case with e.g. apache mod_wsgi.
-    if p_public_url.port not in (None, 80, 443):
-        port_str = str(p_public_url.port)
-        if request.host_port != port_str:
-            if request.host_port in (None, "80", "443"):
-                request.host = p_public_url.netloc
-    # Log a noisy error if the application url is different to what we'd
-    # expect based on public_url setting.
+    # If the environ does not match public_url, requests are almost certainly
+    # going to fail due to auth errors.  We can either bail out early, or we
+    # can forcibly clobber the WSGI environ with the values from public_url.
+    # This is a security risk if you've e.g. mis-configured the server, so
+    # it's not enabled by default.
     application_url = request.application_url
     if public_url != application_url:
-        msg = "The public_url setting does not match the application url.\n"
-        msg += "This will almost certainly cause authentication failures!\n"
-        msg += "    public_url setting is: %s\n" % (public_url,)
-        msg += "    application url is:    %s\n" % (application_url,)
-        logger.error(msg)
-        raise _JSONError([msg], status_code=500)
+        if not request.registry.settings.get("syncserver.force_wsgi_environ"):
+            msg = "\n".join((
+                "The public_url setting doesn't match the application url.",
+                "This will almost certainly cause authentication failures!",
+                "    public_url setting is: %s" % (public_url,),
+                "    application url is:    %s" % (application_url,),
+                "You can disable this check by setting the force_wsgi_environ",
+                "option in your config file, but do so at your own risk.",
+            ))
+            logger.error(msg)
+            raise _JSONError([msg], status_code=500)
+        request.scheme = p_public_url.scheme
+        request.host = p_public_url.netloc
+        request.script_name = p_public_url.path.rstrip("/")
 
 
 def get_configurator(global_config, **settings):
