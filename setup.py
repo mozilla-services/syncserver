@@ -10,7 +10,7 @@ main = syncserver:main
 
 setup(
     name='syncserver',
-    version="1.5.1",
+    version="1.5.2",
     packages=['syncserver'],
     entry_points=entry_points
 )
