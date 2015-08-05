@@ -42,7 +42,13 @@ This should start a server on http://localhost:5000/.
 Now go into Firefox's `about:config` page, search for a setting named
 "tokenServerURI", and change it to point to your server::
 
-    services.sync.tokenServerURI:  http://localhost:5000/token/1.0/sync/1.5
+    identity.sync.tokenserver.uri:  http://localhost:5000/token/1.0/sync/1.5
+
+(Prior to Firefox 42, the TokenServer preference name for Firefox Desktop was
+"services.sync.tokenServerURI". While the old preference name will work in
+Firefox 42 and later, the new preference is recommended as the old preference
+name will be reset when the user signs out from Sync causing potential
+confusion.)
 
 Firefox should now sync against your local server rather than the default
 Mozilla-hosted servers.
