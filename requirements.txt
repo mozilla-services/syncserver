@@ -1,6 +1,7 @@
 cornice==0.16.2
 gunicorn==19.1.1
 pyramid==1.5
+WebOb==1.4.1
 requests==2.7
 simplejson==3.4
 SQLAlchemy==0.9.4
