@@ -9,6 +9,12 @@ from urlparse import urlparse, urlunparse
 from pyramid.response import Response
 from pyramid.events import NewRequest, subscriber
 
+try:
+    import requests.packages.urllib3.contrib.pyopenssl
+    HAS_PYOPENSSL = True
+except ImportError:
+    HAS_PYOPENSSL = False
+
 import mozsvc.config
 
 from tokenserver.util import _JSONError
@@ -21,6 +27,11 @@ def includeme(config):
     # Set the umask so that files are created with secure permissions.
     # Necessary for e.g. created-on-demand sqlite database files.
     os.umask(0077)
+
+    # If PyOpenSSL is available, configure requests to use it.
+    # This helps improve security on older python versions.
+    if HAS_PYOPENSSL:
+        requests.packages.urllib3.contrib.pyopenssl.inject_into_urllib3()
 
     # Sanity-check the deployment settings and provide sensible defaults.
     settings = config.registry.settings
