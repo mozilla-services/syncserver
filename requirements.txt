@@ -8,6 +8,6 @@ SQLAlchemy==0.9.4
 unittest2==0.5.1
 zope.component==4.2.1
 configparser==3.5.0b2
-https://github.com/mozilla-services/mozservices/archive/e00e1b68130423ad98d0f6185655bde650443da8.zip
-https://github.com/mozilla-services/tokenserver/archive/92361b0e7b0bff996a8fff9c894c7be850d12d16.zip
-https://github.com/mozilla-services/server-syncstorage/archive/1.5.11.zip
+https://github.com/mozilla-services/mozservices/archive/706e09b78a78ebff4f71dcaca2fd7b68fa2885fb.zip
+https://github.com/mozilla-services/tokenserver/archive/1.2.16.zip
+https://github.com/mozilla-services/server-syncstorage/archive/1.5.13.zip

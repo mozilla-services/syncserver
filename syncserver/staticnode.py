@@ -138,6 +138,7 @@ class StaticNodeAssignment(object):
                 'node': self.node_url,
                 'generation': row.generation,
                 'client_state': row.client_state,
+                'first_seen_at': row.created_at,
                 'old_client_states': {}
             }
             # Any subsequent rows are due to old client-state values.
@@ -150,9 +151,10 @@ class StaticNodeAssignment(object):
             res.close()
 
     def allocate_user(self, service, email, generation=0, client_state=''):
+        now = get_timestamp()
         params = {
             'service': service, 'email': email, 'generation': generation,
-            'client_state': client_state, 'timestamp': get_timestamp()
+            'client_state': client_state, 'timestamp': now
         }
         try:
             res = self._engine.execute(_CREATE_USER_RECORD, **params)
@@ -167,6 +169,7 @@ class StaticNodeAssignment(object):
                 'node': self.node_url,
                 'generation': generation,
                 'client_state': client_state,
+                'first_seen_at': now,
                 'old_client_states': {}
             }
 
