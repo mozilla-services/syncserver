@@ -46,7 +46,7 @@ users = Table(
 
 _GET_USER_RECORDS = sqltext("""\
 select
-    uid, generation, client_state
+    uid, generation, client_state, created_at
 from
     users
 where
