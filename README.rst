@@ -72,6 +72,22 @@ your way.  Things you might like to change include:
       under the [syncstorage] section.
 
 
+Database Backend Modules
+------------------------
+
+If you python installation doesn't provide the "sqlite" module by default,
+you may need to install it as a separate package::
+
+    $ ./local/bin/pip install pysqlite2
+
+Similarly, if you want to use a different database backend you will need
+to install an appropriate python module, e.g::
+
+    $ ./local/bin/pip install PyMySQL
+    $ ./local/bin/pip install psycopg2
+
+
+
 Questions, Feedback
 -------------------
 
