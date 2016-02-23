@@ -75,7 +75,7 @@ your way.  Things you might like to change include:
 Database Backend Modules
 ------------------------
 
-If you python installation doesn't provide the "sqlite" module by default,
+If your python installation doesn't provide the "sqlite" module by default,
 you may need to install it as a separate package::
 
     $ ./local/bin/pip install pysqlite2
