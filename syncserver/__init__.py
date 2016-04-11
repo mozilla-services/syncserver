@@ -37,7 +37,7 @@ def includeme(config):
     settings = config.registry.settings
     public_url = settings.get("syncserver.public_url")
     if public_url is None:
-        raise RuntimeError("you much configure syncserver.public_url")
+        raise RuntimeError("you must configure syncserver.public_url")
     public_url = public_url.rstrip("/")
     settings["syncserver.public_url"] = public_url
 
