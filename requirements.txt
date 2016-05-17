@@ -9,5 +9,5 @@ unittest2==0.5.1
 zope.component==4.2.1
 configparser==3.5.0b2
 https://github.com/mozilla-services/mozservices/archive/706e09b78a78ebff4f71dcaca2fd7b68fa2885fb.zip
-https://github.com/mozilla-services/tokenserver/archive/1.2.16.zip
-https://github.com/mozilla-services/server-syncstorage/archive/1.5.13.zip
+https://github.com/mozilla-services/tokenserver/archive/bf24e10c728448887deccfdfb1c5f85a983b81ce.zip
+https://github.com/mozilla-services/server-syncstorage/archive/2de95ce923b59551747763b24d1a278eb99b7e0a.zip
