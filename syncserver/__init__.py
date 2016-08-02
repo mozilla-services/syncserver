@@ -92,7 +92,7 @@ def includeme(config):
         # Default to basic logging config.
         root_logger = logging.getLogger("")
         if not root_logger.handlers:
-            logging.basicConfig(level=logging.INFO)
+            logging.basicConfig(level=logging.WARN)
 
     # Include the relevant sub-packages.
     config.scan("syncserver")
