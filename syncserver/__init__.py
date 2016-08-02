@@ -93,6 +93,11 @@ def includeme(config):
         root_logger = logging.getLogger("")
         if not root_logger.handlers:
             logging.basicConfig(level=logging.WARN)
+    if "fxa.metrics_uid_secret_key" not in settings:
+        # Default to a randomly-generated secret.
+        # This setting isn't useful in a self-hosted setup
+        # and setting a default avoids scary-sounding warnings.
+        settings["fxa.metrics_uid_secret_key"] = os.urandom(16).encode("hex")
 
     # Include the relevant sub-packages.
     config.scan("syncserver")
