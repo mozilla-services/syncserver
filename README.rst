@@ -2,7 +2,7 @@ Run-Your-Own Firefox Sync Server
 ================================
 
 This is an all-in-one package for running a self-hosted Firefox Sync server.
-If bundles the "tokenserver" project for authentication and the "syncstorage"
+It bundles the "tokenserver" project for authentication and the "syncstorage"
 project for storage, produce a single stand-alone webapp.
 
 Complete installation instructions are available at:
