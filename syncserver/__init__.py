@@ -83,9 +83,9 @@ def includeme(config):
         settings["storage.backend"] = "syncstorage.storage.sql.SQLStorage"
         settings["storage.sqluri"] = sqluri
         settings["storage.create_tables"] = True
-    if "storage.batch_upload_enabled" not in settings:
-        # Default the new batch-upload API to on
-        settings["storage.batch_upload_enabled"] = True
+    # The batch-upload API is not yet stable in production.
+    # if "storage.batch_upload_enabled" not in settings:
+    #     settings["storage.batch_upload_enabled"] = True
     if "browserid.backend" not in settings:
         # Default to remote verifier, with base of public_url as only audience
         audience = urlunparse(urlparse(public_url)._replace(path=""))
