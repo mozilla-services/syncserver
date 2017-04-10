@@ -22,6 +22,9 @@ from tokenserver.util import _JSONError
 logger = logging.getLogger("syncserver")
 
 
+DEFAULT_TOKENSERVER_BACKEND = "syncserver.staticnode.StaticNodeAssignment"
+
+
 def includeme(config):
     """Install SyncServer application into the given Pyramid configurator."""
     # Set the umask so that files are created with secure permissions.
@@ -53,11 +56,16 @@ def includeme(config):
     settings.pop("config", None)
     if "tokenserver.backend" not in settings:
         # Default to our simple static node-assignment backend
-        settings["tokenserver.backend"] =\
-            "syncserver.staticnode.StaticNodeAssignment"
-        settings["tokenserver.sqluri"] = sqluri
-        settings["tokenserver.node_url"] = public_url
-        settings["endpoints.sync-1.5"] = "{node}/storage/1.5/{uid}"
+        settings["tokenserver.backend"] = DEFAULT_TOKENSERVER_BACKEND
+    if settings["tokenserver.backend"] == DEFAULT_TOKENSERVER_BACKEND:
+        # Provide some additional defaults for the default backend,
+        # unless overridden in the config.
+        if "tokenserver.sqluri" not in settings:
+            settings["tokenserver.sqluri"] = sqluri
+        if "tokenserver.node_url" not in settings:
+            settings["tokenserver.node_url"] = public_url
+        if "endpoints.sync-1.5" not in settings:
+            settings["endpoints.sync-1.5"] = "{node}/storage/1.5/{uid}"
     if "tokenserver.monkey_patch_gevent" not in settings:
         # Default to no gevent monkey-patching
         settings["tokenserver.monkey_patch_gevent"] = False
