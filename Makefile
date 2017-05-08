@@ -31,7 +31,7 @@ test: | $(TOOLS)
 	# Tokenserver tests currently broken due to incorrect file paths
 	# $(ENV)/bin/nosetests -s tokenserver.tests
 	
-	# Test against a running server
+	# Test against a running server.
 	$(ENV)/bin/gunicorn --paste syncserver/tests.ini 2> /dev/null & SERVER_PID=$$!; \
 	sleep 2; \
 	$(ENV)/bin/python -m syncstorage.tests.functional.test_storage \
@@ -39,7 +39,7 @@ test: | $(TOOLS)
 	kill $$SERVER_PID
 
 $(TOOLS): | $(ENV)/COMPLETE
-	$(INSTALL) nose flake8
+	$(INSTALL) -r dev-requirements.txt
 
 .PHONY: serve
 serve: | $(ENV)/COMPLETE

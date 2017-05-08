@@ -1,48 +1,26 @@
-##########################################################
-#                  /!\ WARNING /!\                       #
-# This is completely experimental. Use at your own risk. #
-#             Also, learn you some docker:               #
-#           http://docker.io/gettingstarted              #
-##########################################################
+FROM python:2.7-slim
 
-FROM debian:7.4
-MAINTAINER Dan Callahan <dan.callahan@gmail.com>
-
-# Base system setup
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get install --no-install-recommends -y \
-    vim locales \
-    && apt-get clean
-
-RUN locale-gen C.UTF-8 && LANG=C.UTF-8 /usr/sbin/update-locale
+RUN groupadd --gid 1001 app && \
+    useradd --uid 1001 --gid 1001 --shell /usr/sbin/nologin app
 
 ENV LANG C.UTF-8
 
-RUN useradd --create-home app
+WORKDIR /app
+COPY ./requirements.txt /app/requirements.txt
+COPY ./dev-requirements.txt /app/dev-requirements.txt
 
-# Build the Sync server
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    ca-certificates \
-    build-essential \
-    libzmq-dev \
-    python-dev \
-    python-virtualenv \
+# install syncserver dependencies
+RUN apt-get -q update \
+    && apt-get -q --yes install g++ \
+    && pip install --upgrade --no-cache-dir -r requirements.txt \
+    && pip install --upgrade --no-cache-dir -r dev-requirements.txt \
+    && apt-get -q --yes remove g++ \
+    && apt-get -q --yes autoremove \
     && apt-get clean
 
+COPY ./syncserver /app/syncserver
+COPY ./setup.py /app
+RUN python ./setup.py develop
+
+# run as non priviledged user
 USER app
-
-RUN mkdir -p /home/app/syncserver
-ADD Makefile *.ini *.wsgi *.rst *.txt *.py /home/app/syncserver/
-ADD ./syncserver/ /home/app/syncserver/syncserver/
-WORKDIR /home/app/syncserver
-
-RUN make build
-
-# Run the Sync server
-
-EXPOSE 5000
-
-ENTRYPOINT ["/usr/bin/make"]
-CMD ["serve"]

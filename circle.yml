@@ -1,0 +1,68 @@
+# These environment variables must be set in CircleCI UI
+#
+# DOCKERHUB_REPO - docker hub repo, format: <username>/<repo>
+# DOCKER_EMAIL   - login info for docker hub
+# DOCKER_USER
+# DOCKER_PASS
+#
+machine:
+  services:
+    - docker
+
+dependencies:
+  # make sure to keep the docker cache dir
+  cache_directories:
+    - "~/docker"
+
+  override:
+    - docker info
+
+    # build the container, use circleci's docker cache workaround
+    # only use 1 image per day to keep the cache size from getting 
+    # too big and slowing down the build
+    - I="image-$(date +%j).tar"; if [[ -e ~/docker/$I ]]; then echo "Loading $I"; docker load -i ~/docker/$I; fi
+
+    # create version.json
+    - >
+        printf '{"commit":"%s","version":"%s","source":"https://github.com/%s/%s","build":"%s"}\n' 
+        "$CIRCLE_SHA1" 
+        "$CIRCLE_TAG" 
+        "$CIRCLE_PROJECT_USERNAME" 
+        "$CIRCLE_PROJECT_REPONAME" 
+        "$CIRCLE_BUILD_URL"
+        > version.json
+    - cp version.json $CIRCLE_ARTIFACTS
+
+    - docker build -t syncserver:build .
+
+    - >
+        docker images --no-trunc | 
+        awk '/^app/ {print $3}' | 
+        tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt
+
+    # Clean up any old images and save the new one
+    - I="image-$(date +%j).tar"; mkdir -p ~/docker; rm ~/docker/*; docker save syncserver:build > ~/docker/$I; ls -l ~/docker
+
+test:
+  override:
+    - docker run syncserver:build /bin/sh -c "flake8 syncserver && nosetests syncstorage.tests"
+
+# appropriately tag and push the container to dockerhub
+deployment:
+  hub_latest:
+    branch: "master"
+    commands:
+      - "[ ! -z $DOCKERHUB_REPO ]"
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - "docker tag syncserver:build ${DOCKERHUB_REPO}:latest"
+      - "docker push ${DOCKERHUB_REPO}:latest"
+
+  hub_releases:
+    # push all tags
+    tag: /.*/
+    commands:
+      - "[ ! -z $DOCKERHUB_REPO ]"
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - "docker tag syncserver:build ${DOCKERHUB_REPO}:${CIRCLE_TAG}"
+      - "docker images"
+      - "docker push ${DOCKERHUB_REPO}:${CIRCLE_TAG}"
