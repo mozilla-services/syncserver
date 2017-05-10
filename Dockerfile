@@ -26,9 +26,9 @@ RUN apt-get -q update \
     && apt-get clean
 
 
-COPY ./syncserver /app/syncserver
-COPY ./setup.py /app
-COPY . /app
+ADD ./syncserver /app/syncserver/syncserver
+ADD Makefile *.ini *.wsgi *.rst *.txt *.py /app/
+
 RUN python ./setup.py develop
 
 # run as non priviledged user
