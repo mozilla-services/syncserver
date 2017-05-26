@@ -3,7 +3,7 @@ Run-Your-Own Firefox Sync Server
 
 This is an all-in-one package for running a self-hosted Firefox Sync server.
 It bundles the "tokenserver" project for authentication and the "syncstorage"
-project for storage, produce a single stand-alone webapp.
+project for storage, to produce a single stand-alone webapp.
 
 Complete installation instructions are available at:
 
@@ -13,7 +13,7 @@ Complete installation instructions are available at:
 Quickstart
 ----------
 
-The Sync Server software runs using **python 2.6** or later, and the build
+The Sync Server software runs using **python 2.7**, and the build
 process requires **make** and **virtualenv**.  You will need to have the
 following packages (or similar, depending on your operating system) installed:
 
@@ -85,6 +85,40 @@ to install an appropriate python module, e.g::
 
     $ ./local/bin/pip install PyMySQL
     $ ./local/bin/pip install psycopg2
+
+
+Runner under Docker
+-------------------
+
+There is experimental support for running the server inside a Docker
+container.  Build the image like this::
+
+    $ docker build -t syncserver:latest .
+
+Then you can run the server by passing in configuration options as
+environmet variables, like this::
+
+    $ docker run --rm \
+        # Expose the port that the server will listen on \
+        --network host \
+        -p 5000:5000 \
+        # Set important config options through environment variables
+        -e SYNCSERVER_PUBLIC_URL=http://localhost:5000 \
+        -e SYNCSERVER_SECRET=5up3rS3kr1t \
+        -e SYNCSERVER_SQLURI=sqlite:////tmp/syncserver.db \
+        -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
+        # Run the container we just build \
+        syncserver:latest \
+        # Start gunicorn on the desired localhost port \
+        /usr/local/bin/gunicorn --bind localhost:5000 \
+        # And have it run the syncserver application \
+        syncserver.wsgi_app
+
+And you can test whether it's running correctly by using the builtin
+function test suite, like so::
+
+    $ /local/bin/python -m syncstorage.tests.functional.test_storage \
+        --use-token-server http://localhost:5000/token/1.0/sync/1.5
 
 
 

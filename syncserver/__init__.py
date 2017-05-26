@@ -36,8 +36,10 @@ def includeme(config):
     if HAS_PYOPENSSL:
         requests.packages.urllib3.contrib.pyopenssl.inject_into_urllib3()
 
-    # Sanity-check the deployment settings and provide sensible defaults.
     settings = config.registry.settings
+    import_settings_from_environment_variables(settings)
+
+    # Sanity-check the deployment settings and provide sensible defaults.
     public_url = settings.get("syncserver.public_url")
     if public_url is None:
         raise RuntimeError("you must configure syncserver.public_url")
@@ -92,12 +94,13 @@ def includeme(config):
         settings["storage.sqluri"] = sqluri
         settings["storage.create_tables"] = True
     # The batch-upload API is not yet stable in production.
-    # if "storage.batch_upload_enabled" not in settings:
-    #     settings["storage.batch_upload_enabled"] = True
+    if "storage.batch_upload_enabled" not in settings:
+        settings["storage.batch_upload_enabled"] = False
     if "browserid.backend" not in settings:
-        # Default to remote verifier, with base of public_url as only audience
+        # Default to local verifier to reduce external dependencies.
+        # Use base of public_url as only audience
         audience = urlunparse(urlparse(public_url)._replace(path=""))
-        settings["browserid.backend"] = "tokenserver.verifiers.RemoteVerifier"
+        settings["browserid.backend"] = "tokenserver.verifiers.LocalVerifier"
         settings["browserid.audiences"] = audience
     if "loggers" not in settings:
         # Default to basic logging config.
@@ -111,7 +114,6 @@ def includeme(config):
         settings["fxa.metrics_uid_secret_key"] = os.urandom(16).encode("hex")
 
     # Include the relevant sub-packages.
-    config.scan("syncserver")
     config.include("syncstorage", route_prefix="/storage")
     config.include("tokenserver", route_prefix="/token")
 
@@ -121,6 +123,43 @@ def includeme(config):
 
     config.add_route('itworks', '/')
     config.add_view(itworks, route_name='itworks')
+
+
+def import_settings_from_environment_variables(settings, environ=None):
+    """Helper function to import settings from environment variables.
+
+    This helper exists to allow the most commonly-changed settings to be
+    configured via environment variables, which is useful when deploying
+    with docker.  For more complex configuration needs you should write
+    a .ini config file.
+    """
+    if environ is None:
+        environ = os.environ
+    SETTINGS_FROM_ENVIRON = (
+        ("SYNCSERVER_PUBLIC_URL", "syncserver.public_url", str),
+        ("SYNCSERVER_SECRET", "syncserver.secret", str),
+        ("SYNCSERVER_SQLURI", "syncserver.sqluri", str),
+        ("SYNCSERVER_ALLOW_NEW_USERS",
+         "syncserver.allow_new_users",
+         str_to_bool),
+        ("SYNCSERVER_BATCH_UPLOAD_ENABLED",
+         "storage.batch_upload_enabled",
+         str_to_bool),
+    )
+    for key, name, convert in SETTINGS_FROM_ENVIRON:
+        try:
+            settings[name] = convert(environ[key])
+        except KeyError:
+            pass
+
+
+def str_to_bool(value):
+    """Helper to convert textual boolean strings to actual booleans."""
+    if value.lower() in ("true", "on", "1", "yes"):
+        return True
+    if value.lower() in ("false", "off", "0", "no"):
+        return True
+    raise ValueError("unable to parse boolean from %r" % (value,))
 
 
 @subscriber(NewRequest)
@@ -178,7 +217,7 @@ def get_configurator(global_config, **settings):
     return config
 
 
-def main(global_config, **settings):
+def main(global_config={}, **settings):
     """Load a SyncStorage WSGI app from deployment settings."""
     config = get_configurator(global_config, **settings)
     return config.make_wsgi_app()
