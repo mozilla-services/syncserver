@@ -97,10 +97,10 @@ def includeme(config):
     if "storage.batch_upload_enabled" not in settings:
         settings["storage.batch_upload_enabled"] = False
     if "browserid.backend" not in settings:
-        # Default to remote verifier for simplicity.
+        # Default to local verifier to reduce external dependencies.
         # Use base of public_url as only audience
         audience = urlunparse(urlparse(public_url)._replace(path=""))
-        settings["browserid.backend"] = "tokenserver.verifiers.RemoteVerifier"
+        settings["browserid.backend"] = "tokenserver.verifiers.LocalVerifier"
         settings["browserid.audiences"] = audience
     if "loggers" not in settings:
         # Default to basic logging config.
