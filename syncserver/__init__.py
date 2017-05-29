@@ -114,6 +114,7 @@ def includeme(config):
         settings["fxa.metrics_uid_secret_key"] = os.urandom(16).encode("hex")
 
     # Include the relevant sub-packages.
+    config.scan("syncserver", ignore=["syncserver.wsgi_app"])
     config.include("syncstorage", route_prefix="/storage")
     config.include("tokenserver", route_prefix="/token")
 
