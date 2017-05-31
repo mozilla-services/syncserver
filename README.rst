@@ -1,6 +1,12 @@
 Run-Your-Own Firefox Sync Server
 ================================
 
+.. image:: https://circleci.com/gh/mozilla-services/syncserver/tree/master.svg?style=svg 
+   :target: https://circleci.com/gh/mozilla-services/syncserver/tree/master 
+
+.. image:: https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?style=flat-square 
+   :target: https://hub.docker.com/r/mozilla/syncserver/ 
+
 This is an all-in-one package for running a self-hosted Firefox Sync server.
 It bundles the "tokenserver" project for authentication and the "syncstorage"
 project for storage, to produce a single stand-alone webapp.
