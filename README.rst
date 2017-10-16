@@ -4,7 +4,7 @@ Run-Your-Own Firefox Sync Server
 .. image:: https://circleci.com/gh/mozilla-services/syncserver/tree/master.svg?style=svg 
    :target: https://circleci.com/gh/mozilla-services/syncserver/tree/master 
 
-.. image:: https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?style=flat-square 
+.. image:: https://img.shields.io/docker/automated/mozilla-services/syncserver.svg?style=flat-square 
    :target: https://hub.docker.com/r/mozilla/syncserver/ 
 
 This is an all-in-one package for running a self-hosted Firefox Sync server.
