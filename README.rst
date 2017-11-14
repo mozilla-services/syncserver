@@ -113,6 +113,7 @@ environmet variables, like this::
         -e SYNCSERVER_SECRET=5up3rS3kr1t \
         -e SYNCSERVER_SQLURI=sqlite:////tmp/syncserver.db \
         -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
+        -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
         # Run the container we just build \
         syncserver:latest \
         # Start gunicorn on the desired localhost port \
