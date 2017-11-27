@@ -26,6 +26,7 @@ following packages (or similar, depending on your operating system) installed:
 - python2.7
 - python2.7-dev
 - python-virtualenv
+- gcc and g++
 - make
 
 Take a checkout of this repository, then run "make build" to pull in the 
