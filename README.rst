@@ -106,7 +106,6 @@ Then you can run the server by passing in configuration options as
 environmet variables, like this::
 
     $ docker run --rm \
-        --network host \
         -p 5000:5000 \
         -e SYNCSERVER_PUBLIC_URL=http://localhost:5000 \
         -e SYNCSERVER_SECRET=5up3rS3kr1t \
@@ -114,7 +113,7 @@ environmet variables, like this::
         -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
         -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
         syncserver:latest \
-        /usr/local/bin/gunicorn --bind localhost:5000 \
+        /usr/local/bin/gunicorn --bind 0.0.0.0:5000 \
         syncserver.wsgi_app
 
 And you can test whether it's running correctly by using the builtin
