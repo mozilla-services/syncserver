@@ -106,7 +106,7 @@ Then you can run the server by passing in configuration options as
 environmet variables, like this::
 
     $ docker run --rm \
-        --network host \
+        -p 631:631 \
         -p 5000:5000 \
         -e SYNCSERVER_PUBLIC_URL=http://localhost:5000 \
         -e SYNCSERVER_SECRET=5up3rS3kr1t \
