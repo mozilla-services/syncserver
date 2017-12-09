@@ -106,20 +106,15 @@ Then you can run the server by passing in configuration options as
 environmet variables, like this::
 
     $ docker run --rm \
-        # Expose the port that the server will listen on \
         --network host \
         -p 5000:5000 \
-        # Set important config options through environment variables
         -e SYNCSERVER_PUBLIC_URL=http://localhost:5000 \
         -e SYNCSERVER_SECRET=5up3rS3kr1t \
         -e SYNCSERVER_SQLURI=sqlite:////tmp/syncserver.db \
         -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
         -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
-        # Run the container we just build \
         syncserver:latest \
-        # Start gunicorn on the desired localhost port \
         /usr/local/bin/gunicorn --bind localhost:5000 \
-        # And have it run the syncserver application \
         syncserver.wsgi_app
 
 And you can test whether it's running correctly by using the builtin
