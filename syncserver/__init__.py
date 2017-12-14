@@ -162,7 +162,7 @@ def str_to_bool(value):
     if value.lower() in ("true", "on", "1", "yes"):
         return True
     if value.lower() in ("false", "off", "0", "no"):
-        return True
+        return False
     raise ValueError("unable to parse boolean from %r" % (value,))
 
 
