@@ -17,6 +17,7 @@ COPY ./requirements.txt /app/requirements.txt
 COPY ./dev-requirements.txt /app/dev-requirements.txt
 RUN apt-get -q update \
     && apt-get -q --yes install g++ \
+    && pip install --upgrade pip \
     && pip install --upgrade --no-cache-dir -r requirements.txt \
     && pip install --upgrade --no-cache-dir -r dev-requirements.txt \
     && apt-get -q --yes remove g++ \
