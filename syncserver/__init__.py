@@ -116,6 +116,11 @@ def includeme(config):
             issuer = urlparse(idp_config["auth_server_base_url"]).netloc
             settings["browserid.trusted_issuers"] = [issuer]
             settings["browserid.allowed_issuers"] = [issuer]
+    if "oauth.backend" not in settings:
+        settings["oauth.backend"] = "tokenserver.verifiers.RemoteOAuthVerifier"
+        # If an IdP was specified, use it for oauth verification.
+        if idp is not None:
+            settings["oauth.server_url"] = idp_config["oauth_server_base_url"]
     if "loggers" not in settings:
         # Default to basic logging config.
         root_logger = logging.getLogger("")
