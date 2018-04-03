@@ -4,7 +4,9 @@
 
 import os
 import logging
-from urlparse import urlparse, urlunparse
+from urlparse import urlparse, urlunparse, urljoin
+
+import requests
 
 from pyramid.response import Response
 from pyramid.events import NewRequest, subscriber
@@ -54,6 +56,13 @@ def includeme(config):
         rootdir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         sqluri = "sqlite:///" + os.path.join(rootdir, "syncserver.db")
 
+    # Automagically configure from IdP if one is given.
+    idp = settings.get("syncserver.identity_provider")
+    if idp is not None:
+        r = requests.get(urljoin(idp, '/.well-known/fxa-client-configuration'))
+        r.raise_for_status()
+        idp_config = r.json()
+
     # Configure app-specific defaults based on top-level configuration.
     settings.pop("config", None)
     if "tokenserver.backend" not in settings:
@@ -98,10 +107,15 @@ def includeme(config):
         settings["storage.batch_upload_enabled"] = False
     if "browserid.backend" not in settings:
         # Default to local verifier to reduce external dependencies.
+        settings["browserid.backend"] = "tokenserver.verifiers.LocalVerifier"
         # Use base of public_url as only audience
         audience = urlunparse(urlparse(public_url)._replace(path=""))
-        settings["browserid.backend"] = "tokenserver.verifiers.LocalVerifier"
         settings["browserid.audiences"] = audience
+        # If an IdP was specified, allow it and only it as issuer.
+        if idp is not None:
+            issuer = urlparse(idp_config["auth_server_base_url"]).netloc
+            settings["browserid.trusted_issuers"] = [issuer]
+            settings["browserid.allowed_issuers"] = [issuer]
     if "loggers" not in settings:
         # Default to basic logging config.
         root_logger = logging.getLogger("")
@@ -140,6 +154,7 @@ def import_settings_from_environment_variables(settings, environ=None):
         ("SYNCSERVER_PUBLIC_URL", "syncserver.public_url", str),
         ("SYNCSERVER_SECRET", "syncserver.secret", str),
         ("SYNCSERVER_SQLURI", "syncserver.sqluri", str),
+        ("SYNCSERVER_IDENTITY_PROVIDER", "syncserver.identity_provider", str),
         ("SYNCSERVER_ALLOW_NEW_USERS",
          "syncserver.allow_new_users",
          str_to_bool),
