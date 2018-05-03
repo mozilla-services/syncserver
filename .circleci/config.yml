@@ -1,0 +1,91 @@
+# These environment variables must be set in CircleCI UI
+#
+# DOCKERHUB_REPO - docker hub repo, format: <username>/<repo>
+# DOCKER_EMAIL   - login info for docker hub
+# DOCKER_USER
+# DOCKER_PASS
+# DOCKER_DEPLOY - set to true to deploy to Dockerhub
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # base image
+      - image: ubuntu:16.04
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install essential packages
+          command: |
+            apt-get update
+            apt-get install -y ca-certificates curl build-essential make git
+
+      - run:
+          name: Create version.json
+          command: |
+            printf '{"commit":"%s","version":"%s","source":"https://github.com/%s/%s","build":"%s"}\n' \
+            "$CIRCLE_SHA1" \
+            "$CIRCLE_TAG" \
+            "$CIRCLE_PROJECT_USERNAME" \
+            "$CIRCLE_PROJECT_REPONAME" \
+            "$CIRCLE_BUILD_URL" > version.json
+      - store_artifacts:
+          path: version.json
+      # FIXME: should use an image w/ docker installed by default
+      - run:
+          name: Install Docker
+          command: |
+            set -x
+            VER="17.12.1-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      - run:
+          name: Build deployment container image
+          command: docker build -t app:build .
+      - run:
+          name: Create Docker image shasum256
+          command: |
+            docker images --no-trunc |
+            awk '/^app/ {print $3}' |
+            tee docker-image-shasum256.txt
+      - store_artifacts:
+          path: docker-image-shasum256.txt
+      - run:
+          name: Test flake8
+          command: docker run app:build flake8 syncserver
+      - run:
+          name: Test nose
+          command: docker run app:build nosetests syncstorage.tests
+      - run:
+          name: Push to Dockerhub
+          command: |
+            # set DOCKER_DEPLOY=true in Circle UI to push to Dockerhub
+            DOCKER_DEPLOY="${DOCKER_DEPLOY:-false}"
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              bin/ci/deploy-dockerhub.sh latest
+            fi
+            if [[ "${CIRCLE_BRANCH}" == feature* ]] || [[ "${CIRCLE_BRANCH}" == dockerpush* ]]; then
+              bin/ci/deploy-dockerhub.sh latest
+            fi
+            if [ -n "${CIRCLE_TAG}" ]; then
+              bin/ci/deploy-dockerhub.sh "$CIRCLE_TAG"
+            fi
+workflows:
+  version: 2
+
+  # workflow jobs are _not_ run in tag builds by default
+  # we use filters to whitelist jobs that should be run for tags
+
+  # workflow jobs are run in _all_ branch builds by default
+  # we use filters to blacklist jobs that shouldn't be run for a branch
+
+  # see: https://circleci.com/docs/2.0/workflows/#git-tag-job-execution
+
+  build-test-push:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
