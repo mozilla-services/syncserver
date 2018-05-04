@@ -102,9 +102,8 @@ def includeme(config):
         settings["storage.backend"] = "syncstorage.storage.sql.SQLStorage"
         settings["storage.sqluri"] = sqluri
         settings["storage.create_tables"] = True
-    # The batch-upload API is not yet stable in production.
     if "storage.batch_upload_enabled" not in settings:
-        settings["storage.batch_upload_enabled"] = False
+        settings["storage.batch_upload_enabled"] = True
     if "browserid.backend" not in settings:
         # Default to local verifier to reduce external dependencies.
         settings["browserid.backend"] = "tokenserver.verifiers.LocalVerifier"
