@@ -11,7 +11,7 @@ WORKDIR /app
 COPY ./requirements.txt /app/requirements.txt
 COPY ./dev-requirements.txt /app/dev-requirements.txt
 RUN apk --no-cache update \
-    && apk add dumb-init libstdc++ g++ \
+    && apk add dumb-init libstdc++ libffi-dev openssl-dev g++ \
     && pip install --upgrade pip \
     && pip install --upgrade --no-cache-dir -r requirements.txt \
     && pip install --upgrade --no-cache-dir -r dev-requirements.txt \
