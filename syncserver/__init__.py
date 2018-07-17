@@ -62,6 +62,7 @@ def includeme(config):
         r = requests.get(urljoin(idp, '/.well-known/fxa-client-configuration'))
         r.raise_for_status()
         idp_config = r.json()
+        idp_issuer = urlparse(idp_config["auth_server_base_url"]).netloc
 
     # Configure app-specific defaults based on top-level configuration.
     settings.pop("config", None)
@@ -105,21 +106,29 @@ def includeme(config):
     if "storage.batch_upload_enabled" not in settings:
         settings["storage.batch_upload_enabled"] = True
     if "browserid.backend" not in settings:
-        # Default to local verifier to reduce external dependencies.
-        settings["browserid.backend"] = "tokenserver.verifiers.LocalVerifier"
+        # Default to local verifier to reduce external dependencies,
+        # unless an explicit verifier URL has been configured.
+        verifier_url = settings.get("syncserver.browserid_verifier")
+        if not verifier_url:
+            settings["browserid.backend"] = \
+                "tokenserver.verifiers.LocalBrowserIdVerifier"
+        else:
+            settings["browserid.backend"] = \
+                "tokenserver.verifiers.RemoteBrowserIdVerifier"
+            settings["browserid.verifier_url"] = verifier_url
         # Use base of public_url as only audience
         audience = urlunparse(urlparse(public_url)._replace(path=""))
         settings["browserid.audiences"] = audience
         # If an IdP was specified, allow it and only it as issuer.
         if idp is not None:
-            issuer = urlparse(idp_config["auth_server_base_url"]).netloc
-            settings["browserid.trusted_issuers"] = [issuer]
-            settings["browserid.allowed_issuers"] = [issuer]
+            settings["browserid.trusted_issuers"] = [idp_issuer]
+            settings["browserid.allowed_issuers"] = [idp_issuer]
     if "oauth.backend" not in settings:
         settings["oauth.backend"] = "tokenserver.verifiers.RemoteOAuthVerifier"
         # If an IdP was specified, use it for oauth verification.
         if idp is not None:
             settings["oauth.server_url"] = idp_config["oauth_server_base_url"]
+            settings["oauth.default_issuer"] = idp_issuer
     if "loggers" not in settings:
         # Default to basic logging config.
         root_logger = logging.getLogger("")
@@ -159,6 +168,9 @@ def import_settings_from_environment_variables(settings, environ=None):
         ("SYNCSERVER_SECRET", "syncserver.secret", str),
         ("SYNCSERVER_SQLURI", "syncserver.sqluri", str),
         ("SYNCSERVER_IDENTITY_PROVIDER", "syncserver.identity_provider", str),
+        ("SYNCSERVER_BROWSERID_VERIFIER",
+         "syncserver.browserid_verifier",
+         str),
         ("SYNCSERVER_ALLOW_NEW_USERS",
          "syncserver.allow_new_users",
          str_to_bool),
