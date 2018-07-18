@@ -23,7 +23,7 @@ jobs:
             "$CIRCLE_PROJECT_USERNAME"
             "$CIRCLE_PROJECT_REPONAME"
             "$CIRCLE_BUILD_URL"
-            | tee config/version.json version.json
+            > version.json
       - store_artifacts:
           path: version.json
 
