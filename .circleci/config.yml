@@ -1,0 +1,77 @@
+# These environment variables must be set in CircleCI UI
+#
+# DOCKERHUB_REPO - docker hub repo, format: <username>/<repo>
+# DOCKER_EMAIL   - login info for docker hub
+# DOCKER_USER
+# DOCKER_PASS
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Create version.json
+          command: >
+            printf '{"version":{"hash":"%s","version":"%s","source":"https://github.com/%s/%s","build":"%s"}}\n'
+            "$CIRCLE_SHA1"
+            "$CIRCLE_TAG"
+            "$CIRCLE_PROJECT_USERNAME"
+            "$CIRCLE_PROJECT_REPONAME"
+            "$CIRCLE_BUILD_URL"
+            | tee config/version.json version.json
+      - store_artifacts:
+          path: version.json
+
+      - run:
+          name: Build deployment container image
+          command: docker build -t syncserver:build .
+
+      - run:
+          name: Run Tests
+          command: docker run syncserver:build /bin/sh -c "flake8 syncserver && nosetests syncstorage.tests"
+
+      - run:
+          name: Push to Dockerhub
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              DOCKER_TAG="latest"
+            fi
+
+            if [[ "${CIRCLE_BRANCH}" == feature* ]] || [[ "${CIRCLE_BRANCH}" == dockerpush* ]]; then
+              DOCKER_TAG="${CIRCLE_BRANCH}"
+            fi
+
+            if [ -n "${CIRCLE_TAG}" ]; then
+              DOCKER_TAG="$CIRCLE_TAG"
+            fi
+
+            if [ -n "${DOCKER_TAG}" ]; then
+              echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+              echo ${DOCKERHUB_REPO}:${DOCKER_TAG}
+              docker tag syncserver:build ${DOCKERHUB_REPO}:${DOCKER_TAG}
+              docker images
+              docker push ${DOCKERHUB_REPO}:${DOCKER_TAG}
+            fi
+
+workflows:
+  version: 2
+
+  # workflow jobs are _not_ run in tag builds by default
+  # we use filters to whitelist jobs that should be run for tags
+
+  # workflow jobs are run in _all_ branch builds by default
+  # we use filters to blacklist jobs that shouldn't be run for a branch
+
+  # see: https://circleci.com/docs/2.0/workflows/#git-tag-job-execution
+
+  build-test-push:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
