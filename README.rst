@@ -112,14 +112,13 @@ environmet variables, like this::
         -e SYNCSERVER_SQLURI=sqlite:////tmp/syncserver.db \
         -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
         -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
-        syncserver:latest \
-        /usr/local/bin/gunicorn --bind 0.0.0.0:5000 \
-        syncserver.wsgi_app
+        -e PORT=5000 \
+        syncserver:latest
 
 And you can test whether it's running correctly by using the builtin
 function test suite, like so::
 
-    $ /local/bin/python -m syncstorage.tests.functional.test_storage \
+    $ /usr/local/bin/python -m syncstorage.tests.functional.test_storage \
         --use-token-server http://localhost:5000/token/1.0/sync/1.5
 
 
