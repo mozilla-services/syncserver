@@ -1,0 +1,8 @@
+*.pyc
+local
+*.egg-info
+*.swp
+\.coverage
+*~
+nosetests.xml
+syncserver.db
