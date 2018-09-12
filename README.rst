@@ -13,7 +13,7 @@ project for storage, to produce a single stand-alone webapp.
 
 Complete installation instructions are available at:
 
-   https://docs.services.mozilla.com/howtos/run-sync-1.5.html
+   https://mozilla-services.readthedocs.io/en/latest/howtos/run-sync-1.5.html
 
 
 Quickstart
@@ -62,7 +62,7 @@ Mozilla-hosted servers.
 
 For more details on setting up a stable deployment, see:
 
-   https://docs.services.mozilla.com/howtos/run-sync-1.5.html
+   https://mozilla-services.readthedocs.io/en/latest/howtos/run-sync-1.5.html
 
 
 Customization
