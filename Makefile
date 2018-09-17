@@ -20,7 +20,7 @@ all: build
 build: | $(ENV)/COMPLETE
 $(ENV)/COMPLETE: requirements.txt
 	$(VIRTUALENV) --no-site-packages $(ENV)
-	$(INSTALL) -i https://pypi.python.org/simple -U pip distribute
+	$(INSTALL) -i https://pypi.python.org/simple -U pip
 	$(INSTALL) -r requirements.txt
 	$(ENV)/bin/python ./setup.py develop
 	touch $(ENV)/COMPLETE
