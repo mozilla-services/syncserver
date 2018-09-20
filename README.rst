@@ -122,6 +122,17 @@ function test suite, like so::
         --use-token-server http://localhost:5000/token/1.0/sync/1.5
 
 
+Removing Mozilla-hosted data
+----------------------------
+
+If you have previously uploaded Firefox Sync data
+to the Mozilla-hosted storage service
+and would like to remove it,
+you can use the following script to do so::
+
+    $ pip install PyFxA
+    $ python ./bin/delete_user_data.py user@example.com
+
 
 Questions, Feedback
 -------------------
