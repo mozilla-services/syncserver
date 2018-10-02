@@ -10,7 +10,12 @@ are implicitly assigned to a single, static node.
 
 """
 import time
-import urlparse
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
+
 from mozsvc.exceptions import BackendError
 
 from sqlalchemy import Column, Integer, String, BigInteger, Index
@@ -98,7 +103,7 @@ class StaticNodeAssignment(object):
     def __init__(self, sqluri, node_url, **kw):
         self.sqluri = sqluri
         self.node_url = node_url
-        self.driver = urlparse.urlparse(sqluri).scheme.lower()
+        self.driver = urlparse(sqluri).scheme.lower()
         sqlkw = {
             "logging_name": "syncserver",
             "connect_args": {},
@@ -111,7 +116,7 @@ class StaticNodeAssignment(object):
             sqlkw["connect_args"]["check_same_thread"] = False
             # If using a :memory: database, we must use a QueuePool of
             # size 1 so that a single connection is shared by all threads.
-            if urlparse.urlparse(sqluri).path.lower() in ("/", "/:memory:"):
+            if urlparse(sqluri).path.lower() in ("/", "/:memory:"):
                 sqlkw["pool_size"] = 1
                 sqlkw["max_overflow"] = 0
         if "mysql" in self.driver:

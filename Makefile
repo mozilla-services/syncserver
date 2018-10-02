@@ -1,3 +1,8 @@
+# Once there is Python 3 support in this package and it's dependencies
+# the detection of the used Python version should be changed.
+# The following line prefers `python` as this will allow this to work
+# in CI (e.g. Travis CI) and put up the configured Python version:
+# SYSTEMPYTHON = `which python python3 python2 | head -n 1`
 SYSTEMPYTHON = `which python2 python | head -n 1`
 VIRTUALENV = virtualenv --python=$(SYSTEMPYTHON)
 ENV = ./local
