@@ -6,7 +6,10 @@ import os
 import sys
 import site
 from logging.config import fileConfig
-from ConfigParser import NoSectionError
+try:
+    from ConfigParser import NoSectionError
+except ImportError:
+    from configparser import NoSectionError
 
 # detecting if virtualenv was used in this dir
 _CURDIR = os.path.dirname(os.path.abspath(__file__))

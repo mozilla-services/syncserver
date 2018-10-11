@@ -2,9 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import binascii
 import os
 import logging
-from urlparse import urlparse, urlunparse, urljoin
+try:
+    from urlparse import urlparse, urlunparse, urljoin
+except ImportError:
+    from urllib.parse import urlparse, urlunparse, urljoin
 
 import requests
 
@@ -31,7 +35,7 @@ def includeme(config):
     """Install SyncServer application into the given Pyramid configurator."""
     # Set the umask so that files are created with secure permissions.
     # Necessary for e.g. created-on-demand sqlite database files.
-    os.umask(0077)
+    os.umask(0o077)
 
     # If PyOpenSSL is available, configure requests to use it.
     # This helps improve security on older python versions.
@@ -50,7 +54,7 @@ def includeme(config):
 
     secret = settings.get("syncserver.secret")
     if secret is None:
-        secret = os.urandom(32).encode("hex")
+        secret = generate_random_hex_key(64)
     sqluri = settings.get("syncserver.sqluri")
     if sqluri is None:
         rootdir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -138,7 +142,7 @@ def includeme(config):
         # Default to a randomly-generated secret.
         # This setting isn't useful in a self-hosted setup
         # and setting a default avoids scary-sounding warnings.
-        settings["fxa.metrics_uid_secret_key"] = os.urandom(16).encode("hex")
+        settings["fxa.metrics_uid_secret_key"] = generate_random_hex_key(32)
 
     # Include the relevant sub-packages.
     config.scan("syncserver", ignore=["syncserver.wsgi_app"])
@@ -195,6 +199,10 @@ def str_to_bool(value):
     if value.lower() in ("false", "off", "0", "no"):
         return False
     raise ValueError("unable to parse boolean from %r" % (value,))
+
+
+def generate_random_hex_key(length):
+    return binascii.hexlify(os.urandom(length // 2))
 
 
 @subscriber(NewRequest)

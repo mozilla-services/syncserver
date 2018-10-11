@@ -2,6 +2,13 @@ language: python
 
 python:
   - "2.7"
+# The way the selection of the Python version is currently made in Makefile
+# leads to travis always picking up Python 2 for the task.
+# All versions of Python are appearantly present in a travis environment.
+# Once the makefile has been adjusted the following lines should be enabled.
+#  - "3.5"
+#  - "3.6"
+#  - "3.7-dev"
 
 notifications:
   email:
