@@ -20,6 +20,7 @@ notifications:
     skip_join: false
 
 install:
+  - pip install virtualenv
   - make build
 
 script:
