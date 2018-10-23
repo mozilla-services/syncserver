@@ -4,7 +4,7 @@
 # in CI (e.g. Travis CI) and put up the configured Python version:
 # SYSTEMPYTHON = `which python python3 python2 | head -n 1`
 SYSTEMPYTHON = `which python2 python | head -n 1`
-VIRTUALENV = virtualenv --python=$(SYSTEMPYTHON)
+VIRTUALENV = $(SYSTEMPYTHON) -m virtualenv --python=$(SYSTEMPYTHON)
 ENV = ./local
 TOOLS := $(addprefix $(ENV)/bin/,flake8 nosetests)
 
