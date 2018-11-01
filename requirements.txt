@@ -2,7 +2,7 @@ cornice==0.16.2
 gunicorn==19.6
 pyramid==1.5
 WebOb==1.4.1
-requests==2.13
+requests==2.20
 SQLAlchemy==1.2.12
 unittest2==1.1
 zope.component==4.2.1
