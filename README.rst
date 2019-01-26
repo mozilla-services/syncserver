@@ -98,7 +98,8 @@ Runner under Docker
 -------------------
 
 There is experimental support for running the server inside a Docker
-container.  Build the image like this::
+container. The docker image runs with UID/GID 1001/10001.
+Build the image like this::
 
     $ docker build -t syncserver:latest .
 
@@ -120,6 +121,21 @@ function test suite, like so::
 
     $ /usr/local/bin/python -m syncstorage.tests.functional.test_storage \
         --use-token-server http://localhost:5000/token/1.0/sync/1.5
+
+If you'd like a persistent setup, you can mount a volume as well:
+
+    $ docker run -d \
+        -v /syncserver:/data \
+        -p 5000:5000 \
+        -e SYNCSERVER_PUBLIC_URL=http://localhost:5000 \
+        -e SYNCSERVER_SECRET=5up3rS3kr1t \
+        -e SYNCSERVER_SQLURI=sqlite:////data/syncserver.db \
+        -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
+        -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
+        -e PORT=5000 \
+        syncserver:latest
+        
+Make sure that /syncserver is owned by 1001:1001
 
 
 Removing Mozilla-hosted data
