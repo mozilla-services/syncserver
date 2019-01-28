@@ -122,7 +122,7 @@ function test suite, like so::
     $ /usr/local/bin/python -m syncstorage.tests.functional.test_storage \
         --use-token-server http://localhost:5000/token/1.0/sync/1.5
 
-If you'd like a persistent setup, you can mount a volume as well:
+If you'd like a persistent setup, you can mount a volume as well::
 
     $ docker run -d \
         -v /syncserver:/data \
