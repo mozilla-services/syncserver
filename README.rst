@@ -73,10 +73,10 @@ All customization of the server can be done by editing the file
 your way.  Things you might like to change include:
 
     * The client-visible hostname for your server.  Edit the "public_url"
-      key under the [syncstorage] section.
+      key under the [syncerver] section.
 
     * The database in which to store sync data.  Edit the "sqluri" setting
-      under the [syncstorage] section.
+      under the [syncserver] section.
 
 
 Database Backend Modules
