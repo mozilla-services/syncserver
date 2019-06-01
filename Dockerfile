@@ -13,8 +13,8 @@ COPY ./dev-requirements.txt /app/dev-requirements.txt
 RUN apk --no-cache update \
     && apk add dumb-init libstdc++ libffi-dev openssl-dev g++ \
     && pip install --upgrade pip \
-    && pip install --upgrade --no-cache-dir --no-use-pep517 -r requirements.txt \
-    && pip install --upgrade --no-cache-dir --no-use-pep517 -r dev-requirements.txt \
+    && pip install --upgrade --no-cache-dir -r requirements.txt \
+    && pip install --upgrade --no-cache-dir -r dev-requirements.txt \
     && apk del g++
 
 COPY . /app
