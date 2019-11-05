@@ -102,7 +102,7 @@ Runner under Docker
 -------------------
 
 There is experimental support for running the server inside a Docker
-container. The docker image runs with UID/GID 1001/10001.
+container. The docker image runs with UID/GID 1001/1001.
 Build the image like this::
 
     $ docker build -t syncserver:latest .
