@@ -101,6 +101,8 @@ to install an appropriate python module, e.g::
 Runner under Docker
 -------------------
 
+[Dockerhub Page](https://hub.docker.com/r/mozilla/syncserver)
+
 There is experimental support for running the server inside a Docker
 container. The docker image runs with UID/GID 1001/1001.
 Build the image like this::
@@ -118,7 +120,7 @@ environmet variables, like this::
         -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
         -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
         -e PORT=5000 \
-        syncserver:latest
+        mozilla/syncserver:latest
 
 Don't forget to `generate a random secret key <https://mozilla-services.readthedocs.io/en/latest/howtos/run-sync-1.5.html#further-configuration>`_
 to use in the `SYNCSERVER_SECRET` environment variable!
@@ -140,7 +142,7 @@ If you'd like a persistent setup, you can mount a volume as well::
         -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
         -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
         -e PORT=5000 \
-        syncserver:latest
+        mozilla/syncserver:latest
         
 Make sure that /syncserver is owned by 1001:1001
 
