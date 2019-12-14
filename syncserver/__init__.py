@@ -186,8 +186,8 @@ def import_settings_from_environment_variables(settings, environ=None):
          str_to_bool),
     )
     if "SYNCSERVER_SECRET_FILE" in environ:
-        settings["syncserver.secret"] = open(environ["SYNCSERVER_SECRET_FILE"])
-            .read().strip()
+        settings["syncserver.secret"] = \
+            open(environ["SYNCSERVER_SECRET_FILE"]).read().strip()
     for key, name, convert in SETTINGS_FROM_ENVIRON:
         try:
             settings[name] = convert(environ[key])
