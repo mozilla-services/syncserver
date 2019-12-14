@@ -122,8 +122,21 @@ environmet variables, like this::
         -e PORT=5000 \
         mozilla/syncserver:latest
 
+    or
+
+    $ docker run --rm \
+        -p 5000:5000 \
+        -e SYNCSERVER_PUBLIC_URL=http://localhost:5000 \
+        -e SYNCSERVER_SECRET_FILE=<PUT YOUR SECRET KEY FILE LOCATION HERE> \
+        -e SYNCSERVER_SQLURI=sqlite:////tmp/syncserver.db \
+        -e SYNCSERVER_BATCH_UPLOAD_ENABLED=true \
+        -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
+        -e PORT=5000 \
+        -v /secret/file/at/host:<PUT YOUR SECRET KEY FILE LOCATION HERE>  \
+        mozilla/syncserver:latest
+
 Don't forget to `generate a random secret key <https://mozilla-services.readthedocs.io/en/latest/howtos/run-sync-1.5.html#further-configuration>`_
-to use in the `SYNCSERVER_SECRET` environment variable!
+to use in the `SYNCSERVER_SECRET` environment variable or mount your secret key file!
 
 And you can test whether it's running correctly by using the builtin
 function test suite, like so::
