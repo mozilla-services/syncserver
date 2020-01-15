@@ -41,13 +41,16 @@ users = Table(
     Column("client_state", String(32), nullable=False),
     Column("created_at", BigInteger(), nullable=False),
     Column("replaced_at", BigInteger(), nullable=True),
+    Column("keys_changed_at", BigInteger(), nullable=True),
+    Column("node", String(255), nullable=True),
     Index('lookup_idx', 'email', 'service', 'created_at'),
 )
 
 
 _GET_USER_RECORDS = sqltext("""\
 select
-    uid, generation, client_state, created_at, replaced_at
+    uid, generation, client_state, created_at, replaced_at,
+    keys_changed_at, node
 from
     users
 where
@@ -64,9 +67,11 @@ limit
 _CREATE_USER_RECORD = sqltext("""\
 insert into
     users
-    (service, email, generation, client_state, created_at, replaced_at)
+    (service, email, generation, client_state, created_at, replaced_at,
+     keys_changed_at, node)
 values
-    (:service, :email, :generation, :client_state, :timestamp, NULL)
+    (:service, :email, :generation, :client_state, :timestamp, NULL,
+     :keys_changed_at, :node)
 """)
 
 
@@ -125,7 +130,7 @@ class StaticNodeAssignment(object):
         self._engine = create_engine(sqluri, **sqlkw)
         users.create(self._engine, checkfirst=True)
 
-    def get_user(self, service, email):
+    def get_user(self, service, email, **kw):
         params = {'service': service, 'email': email}
         res = self._engine.execute(_GET_USER_RECORDS, **params)
         try:
@@ -140,7 +145,8 @@ class StaticNodeAssignment(object):
                 'generation': row.generation,
                 'client_state': row.client_state,
                 'first_seen_at': row.created_at,
-                'old_client_states': {}
+                'old_client_states': {},
+                'keys_changed_at': row.keys_changed_at,
             }
             # Any subsequent rows are due to old client-state values.
             old_row = res.fetchone()
@@ -163,11 +169,13 @@ class StaticNodeAssignment(object):
         finally:
             res.close()
 
-    def allocate_user(self, service, email, generation=0, client_state=''):
+    def allocate_user(self, service, email, generation=0, client_state='',
+                      keys_changed_at=0, **kw):
         now = get_timestamp()
         params = {
             'service': service, 'email': email, 'generation': generation,
-            'client_state': client_state, 'timestamp': now
+            'client_state': client_state, 'timestamp': now,
+            'keys_changed_at': keys_changed_at, 'node': self.node_url,
         }
         res = self._engine.execute(_CREATE_USER_RECORD, **params)
         res.close()
@@ -178,10 +186,12 @@ class StaticNodeAssignment(object):
             'generation': generation,
             'client_state': client_state,
             'first_seen_at': now,
-            'old_client_states': {}
+            'old_client_states': {},
+            'keys_changed_at': keys_changed_at,
         }
 
-    def update_user(self, service, user, generation=None, client_state=None):
+    def update_user(self, service, user, generation=None, client_state=None,
+                    keys_changed_at=0, node=None, **kw):
         if client_state is None:
             # uid can stay the same, just update the generation number.
             if generation is not None:
@@ -209,6 +219,7 @@ class StaticNodeAssignment(object):
                 'service': service, 'email': user['email'],
                 'generation': generation, 'client_state': client_state,
                 'timestamp': now,
+                'keys_changed_at': keys_changed_at, 'node': node,
             }
             res = self._engine.execute(_CREATE_USER_RECORD, **params)
             res.close()
@@ -216,6 +227,8 @@ class StaticNodeAssignment(object):
             user['generation'] = generation
             user['old_client_states'][user['client_state']] = True
             user['client_state'] = client_state
+            user['keys_changed_at'] = keys_changed_at
+            user['node'] = node
             # Mark old records as having been replaced.
             # If we crash here, they are unmarked and we may fail to
             # garbage collect them for a while, but the active state
