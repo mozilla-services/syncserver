@@ -1,3 +1,2 @@
 include syncserver.ini
-include syncserver.wsgi
-include syncserver/tests.ini
+include syncserver/management.html

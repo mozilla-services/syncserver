@@ -1,0 +1,19 @@
+<html>
+  <head><title>Super Cool Migration Testing Management Interface 2.0</title></head>
+<body>
+  <h1>Migration Testing Server Management Interface</h1>
+  <p><b>Current Migration State:</b> {migration_state}</p>
+  <form action="/" method="POST">
+    <input type="hidden" name="cmd" value="begin_migration" />
+    <input type="submit" value="Begin Migration" />
+  </form>
+  <form action="/" method="POST">
+    <input type="hidden" name="cmd" value="complete_migration" />
+    <input type="submit" value="Complete Migration" />
+  </form>
+  <form action="/" method="POST">
+    <input type="hidden" name="cmd" value="reset" />
+    <input type="submit" value="Reset" />
+  </form>
+</body>
+</html>
