@@ -2,9 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import collections
+
 from pyramid import httpexceptions
 
 import syncserver.migration
+
+
+RECENT_REQUESTS = collections.deque(maxlen=30)
 
 
 def interpose_migration_state_errors(handler, registry):
@@ -37,6 +42,25 @@ def interpose_migration_state_errors(handler, registry):
     return interpose_migration_state_errors_tween
 
 
+def log_recent_requests_in_memory(handler, registry):
+    """Keep a log of recent requests in memory, for easy visibility.
+
+    This is a little debugging aid for folks using the server to test
+    client behaviour, they can see the recent requests without having
+    to trawl through the server logs.
+
+    This only really works if you have a single worker, but that's
+    fine for our purposes here.
+    """
+
+    def log_recent_requests_in_memory_tween(request):
+        RECENT_REQUESTS.appendleft("{} {}".format(request.method, request.path))
+        return handler(request)
+
+    return log_recent_requests_in_memory_tween
+
+
 def includeme(config):
     """Include all the SyncServer tweens into the given config."""
     config.add_tween("syncserver.tweens.interpose_migration_state_errors")
+    config.add_tween("syncserver.tweens.log_recent_requests_in_memory")

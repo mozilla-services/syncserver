@@ -32,7 +32,7 @@ $(ENV)/COMPLETE: requirements.txt
 
 .PHONY: serve
 serve: | $(ENV)/COMPLETE
-	$(ENV)/bin/gunicorn --paste ./syncserver.ini
+	$(ENV)/bin/gunicorn --paste ./syncserver.ini --workers 1
 
 .PHONY: clean
 clean:

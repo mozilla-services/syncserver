@@ -33,6 +33,7 @@ from pyramid.response import Response
 from pyramid.interfaces import IAuthenticationPolicy
 
 import syncserver.migration
+import syncserver.tweens
 
 # A GET on / returns a simple management interface,
 # while POST requests control the state of the server.
@@ -46,7 +47,8 @@ def _management(request):
     with open(src) as f:
         content = f.read()
     content = content.format(
-        migration_state=request.registry["MigrationStateManager"].current_state_name()
+        migration_state=request.registry["MigrationStateManager"].current_state_name(),
+        recent_requests="<br/>".join(syncserver.tweens.RECENT_REQUESTS),
     )
     return Response(content, content_type="text/html")
 
