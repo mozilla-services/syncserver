@@ -101,7 +101,7 @@ to install an appropriate python module, e.g::
 Runner under Docker
 -------------------
 
-[Dockerhub Page](https://hub.docker.com/r/mozilla/syncserver)
+`Dockerhub Page <https://hub.docker.com/r/mozilla/syncserver>`_
 
 There is experimental support for running the server inside a Docker
 container. The docker image runs with UID/GID 1001/1001.
@@ -110,7 +110,7 @@ Build the image like this::
     $ docker build -t syncserver:latest .
 
 Then you can run the server by passing in configuration options as
-environmet variables, like this::
+environment variables, like this::
 
     $ docker run --rm \
         -p 5000:5000 \
