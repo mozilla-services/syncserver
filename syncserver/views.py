@@ -26,6 +26,7 @@ during the production deployment.
 """
 
 import os
+import time
 
 from cornice import Service
 from pyramid import httpexceptions
@@ -91,6 +92,7 @@ def _token(request):
     auth_policy = request.registry.getUtility(IAuthenticationPolicy) 
     token, key = auth_policy.encode_hawk_id(request, uid)
 
+    request.response.headers["X-Timestamp"] = str(int(time.time() * 100) / 100.0)
     return {
         'id': token,
         'key': key,
