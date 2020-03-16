@@ -9,5 +9,6 @@ zope.component==4.2.1
 configparser==3.5
 mozsvc==0.9
 futures==3.0
+soupsieve==1.9.5
 https://github.com/mozilla-services/tokenserver/archive/1.4.5.zip
 https://github.com/mozilla-services/server-syncstorage/archive/1.6.14.zip
