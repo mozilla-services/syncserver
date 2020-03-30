@@ -129,9 +129,15 @@ def includeme(config):
             settings["browserid.allowed_issuers"] = [idp_issuer]
     if "oauth.backend" not in settings:
         settings["oauth.backend"] = "tokenserver.verifiers.RemoteOAuthVerifier"
-        # If an IdP was specified, use it for oauth verification.
-        if idp is not None:
+        # If an explicit OAuth verifier was configured, use it.
+        # Otherwise take the URL from the IdP config, if present.
+        verifier_url = settings.get("syncserver.oauth_verifier")
+        if verifier_url is not None:
+            settings["oauth.server_url"] = verifier_url
+        elif idp is not None:
             settings["oauth.server_url"] = idp_config["oauth_server_base_url"]
+        # If an IdP was configured, it's the default issuer of OAuth tokens.
+        if idp is not None:
             settings["oauth.default_issuer"] = idp_issuer
     if "loggers" not in settings:
         # Default to basic logging config.
@@ -172,6 +178,7 @@ def import_settings_from_environment_variables(settings, environ=None):
         ("SYNCSERVER_SECRET", "syncserver.secret", str),
         ("SYNCSERVER_SQLURI", "syncserver.sqluri", str),
         ("SYNCSERVER_IDENTITY_PROVIDER", "syncserver.identity_provider", str),
+        ("SYNCSERVER_OAUTH_VERIFIER", "syncserver.oauth_verifier", str),
         ("SYNCSERVER_BROWSERID_VERIFIER",
          "syncserver.browserid_verifier",
          str),
