@@ -53,12 +53,16 @@ def main(argv):
         # TODO: this won't work if the user has enabled two-step auth.
         status = s.get_email_status()
         if not status["sessionVerified"]:
-            code = raw_input("Enter verification link or code: ")
-            if "?" in code:
-                # They copy-pasted the full URL.
-                code_url = urlparse.urlparse(code)
-                code = urlparse.parse_qs(code_url.query)["code"][0]
-            s.verify_email_code(code)
+            if s.verificationMethod == "totp-2fa":
+                code = raw_input("Enter TOTP code: ")
+                s.totp_verify(code)
+            else:
+                code = raw_input("Enter verification link or code received via email: ")
+                if "?" in code:
+                    # They copy-pasted the full URL.
+                    code_url = urlparse.urlparse(code)
+                    code = urlparse.parse_qs(code_url.query)["code"][0]
+                s.verify_email_code(code)
 
         # Prepare authentication details for tokenserver.
         (_, kB) = s.fetch_keys()
