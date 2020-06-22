@@ -1,6 +1,6 @@
 # Contributing
 
-Anyone is welcome to help with development of this packge.
+Anyone is welcome to help with development of this package.
  Feel free to get in touch with other community members on IRC, the
 mailing list or through issues here on GitHub.
 
