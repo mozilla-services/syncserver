@@ -175,5 +175,5 @@ you can use the following script to do so::
 Questions, Feedback
 -------------------
 
-- IRC channel: #sync. See http://irc.mozilla.org/
+- Matrix: https://wiki.mozilla.org/Matrix#Getting_Started
 - Mailing list: https://mail.mozilla.org/listinfo/services-dev
