@@ -11,5 +11,6 @@ mozsvc==0.9
 futures==3.0
 soupsieve==1.9.5
 umemcache==1.6.3
+google-cloud-spanner==1.18.0
 https://github.com/mozilla-services/tokenserver/archive/1.5.11.zip
 https://github.com/mozilla-services/server-syncstorage/archive/1.8.0.zip
