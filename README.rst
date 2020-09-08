@@ -1,11 +1,11 @@
 Run-Your-Own Firefox Sync Server
 ================================
 
-.. image:: https://circleci.com/gh/mozilla-services/syncserver/tree/master.svg?style=svg 
-   :target: https://circleci.com/gh/mozilla-services/syncserver/tree/master 
+.. image:: https://circleci.com/gh/mozilla-services/syncserver/tree/master.svg?style=svg
+   :target: https://circleci.com/gh/mozilla-services/syncserver/tree/master
 
-.. image:: https://img.shields.io/docker/automated/mozilla-services/syncserver.svg?style=flat-square 
-   :target: https://hub.docker.com/r/mozilla/syncserver/ 
+.. image:: https://img.shields.io/docker/automated/mozilla-services/syncserver.svg?style=flat-square
+   :target: https://hub.docker.com/r/mozilla/syncserver/
 
 This is an all-in-one package for running a self-hosted Firefox Sync server.
 It bundles the "tokenserver" project for authentication and the "syncstorage"
@@ -28,8 +28,14 @@ following packages (or similar, depending on your operating system) installed:
 - python-virtualenv
 - gcc and g++
 - make
+- libstdc++
+- libffi-dev
+- mysql-dev
+- musl-dev
+- ncurses-dev
+- openssl-dev
 
-Take a checkout of this repository, then run "make build" to pull in the 
+Take a checkout of this repository, then run "make build" to pull in the
 necessary python package dependencies::
 
     $ git clone https://github.com/mozilla-services/syncserver
@@ -44,7 +50,7 @@ Now you can run the server::
 
     $ make serve
 
-This should start a server on http://localhost:5000/.  
+This should start a server on http://localhost:5000/.
 
 Now go into Firefox's `about:config` page, search for a setting named
 "tokenServerURI", and change it to point to your server::
@@ -157,7 +163,7 @@ If you'd like a persistent setup, you can mount a volume as well::
         -e SYNCSERVER_FORCE_WSGI_ENVIRON=false \
         -e PORT=5000 \
         mozilla/syncserver:latest
-        
+
 Make sure that /syncserver is owned by 1001:1001
 
 
