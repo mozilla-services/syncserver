@@ -143,7 +143,10 @@ def includeme(config):
         # Default to basic logging config.
         root_logger = logging.getLogger("")
         if not root_logger.handlers:
-            logging.basicConfig(level=logging.WARN)
+            if settings.get("syncserver.debug_enabled"):
+                logging.basicConfig(level=logging.DEBUG)
+            else:
+                logging.basicConfig(level=logging.WARN)
     if "fxa.metrics_uid_secret_key" not in settings:
         # Default to a randomly-generated secret.
         # This setting isn't useful in a self-hosted setup
@@ -190,6 +193,9 @@ def import_settings_from_environment_variables(settings, environ=None):
          str_to_bool),
         ("SYNCSERVER_BATCH_UPLOAD_ENABLED",
          "storage.batch_upload_enabled",
+         str_to_bool),
+        ("SYNCSERVER_DEBUG_ENABLED",
+         "syncserver.debug_enabled",
          str_to_bool),
     )
     if "SYNCSERVER_SECRET_FILE" in environ:
