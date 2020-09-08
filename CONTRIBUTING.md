@@ -47,13 +47,13 @@ This is an example workflow to make it easier to submit Pull Requests. Imagine y
     $ git clone https://github.com/mozilla-services/syncserver.git
     $ cd syncserver-auth-server
     $ git remote add user1 git@github.com:user1/syncserver.git
-```
+    ```
 
 3. Create a branch for your fix/feature and make sure it's your currently checked-out branch:
 
     ```sh
     $ git checkout -b add-new-feature
-```
+    ```
 
 4. Add/fix code, add tests then commit and push this branch to your repo:
 
@@ -61,7 +61,7 @@ This is an example workflow to make it easier to submit Pull Requests. Imagine y
     $ git add <files...>
     $ git commit
     $ git push user1 add-new-feature
-```
+    ```
 
 5. From the GitHub interface for your repo, click the `Review Changes and Pull Request` which appears next to your new branch.
 
@@ -72,9 +72,9 @@ This is an example workflow to make it easier to submit Pull Requests. Imagine y
 The main reason for creating a new branch for each feature or fix is so that you can track master correctly. If you need
 to fetch the latest code for a new fix, try the following:
 
-```sh
-$ git checkout master
-$ git pull
-```
+    ```sh
+    $ git checkout master
+    $ git pull
+    ```
 
 Now you're ready to branch again for your new feature (from step 3 above).
