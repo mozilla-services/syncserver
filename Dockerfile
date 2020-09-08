@@ -10,6 +10,8 @@ WORKDIR /app
 # install syncserver dependencies
 COPY ./requirements.txt /app/requirements.txt
 COPY ./dev-requirements.txt /app/dev-requirements.txt
+# install the base set of libraries if they're not present.
+# NOTE: please update the README to include any changes.
 RUN apk --no-cache update \
     && apk add bash dumb-init gcc libstdc++ libffi-dev make mysql-dev musl-dev ncurses-dev openssl-dev g++ \
     && pip install --upgrade pip \
