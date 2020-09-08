@@ -72,9 +72,9 @@ This is an example workflow to make it easier to submit Pull Requests. Imagine y
 The main reason for creating a new branch for each feature or fix is so that you can track master correctly. If you need
 to fetch the latest code for a new fix, try the following:
 
-    ```sh
-    $ git checkout master
-    $ git pull
-    ```
+```sh
+$ git checkout master
+$ git pull
+```
 
 Now you're ready to branch again for your new feature (from step 3 above).
