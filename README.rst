@@ -167,6 +167,26 @@ If you'd like a persistent setup, you can mount a volume as well::
 Make sure that /syncserver is owned by 1001:1001
 
 
+`Docker Compose <https://docs.docker.com/compose>`_ can also be used for structured deployments::
+
+    version: '3.7'
+    services:
+        syncserver:
+            container_name: syncserver
+            image: mozilla/syncserver:latest
+            volumes:
+                - /syncserver:/data
+            ports:
+                - 5000:5000
+            environment:
+                SYNCSERVER_PUBLIC_URL: 'http://localhost:5000'
+                SYNCSERVER_SECRET: '<PUT YOUR SECRET KEY HERE>'
+                SYNCSERVER_SQLURI: 'sqlite:////data/syncserver.db'
+                SYNCSERVER_BATCH_UPLOAD_ENABLED: 'true'
+                SYNCSERVER_FORCE_WSGI_ENVIRON: 'false'
+                PORT: '5000'
+            restart: always
+
 Removing Mozilla-hosted data
 ----------------------------
 
