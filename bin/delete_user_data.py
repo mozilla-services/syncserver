@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 #
 # A helper script to delete user data from a Sync storage server.
 #
@@ -24,14 +26,24 @@ import sys
 import getpass
 import hashlib
 import argparse
-import urlparse
 
 import requests
 import hawkauthlib
 import fxa.core
 
+
+try:
+    # python 2 support
+    from urlparse import urlparse, parse_qs, urljoin
+except ModuleNotFoundError:
+    # python 3 support
+    from urllib.parse import urlparse, parse_qs, urljoin
+    from six.moves import input as raw_input
+
+
 DEFAULT_FXA_URI = "https://api.accounts.firefox.com"
 DEFAULT_TOKENSERVER_URI = "https://token.services.mozilla.com"
+
 
 def main(argv):
     parser = argparse.ArgumentParser(description="Delete Firefox Sync data")
@@ -57,11 +69,12 @@ def main(argv):
                 code = raw_input("Enter TOTP code: ")
                 s.totp_verify(code)
             else:
-                code = raw_input("Enter verification link or code received via email: ")
+                code = raw_input(
+                    "Enter verification link or code received via email: ")
                 if "?" in code:
                     # They copy-pasted the full URL.
-                    code_url = urlparse.urlparse(code)
-                    code = urlparse.parse_qs(code_url.query)["code"][0]
+                    code_url = urlparse(code)
+                    code = parse_qs(code_url.query)["code"][0]
                 s.verify_email_code(code)
 
         # Prepare authentication details for tokenserver.
@@ -70,7 +83,7 @@ def main(argv):
         auth = s.get_identity_assertion(args.tokenserver_uri)
 
         # Auth to tokenserver, find sync storage node.
-        token_uri = urlparse.urljoin(args.tokenserver_uri, "1.0/sync/1.5")
+        token_uri = urljoin(args.tokenserver_uri, "1.0/sync/1.5")
         r = requests.get(token_uri, headers={
             "Authorization": "BrowserID " + auth,
             "X-Client-State": xcs,
@@ -79,16 +92,16 @@ def main(argv):
 
         node = r.json()
         api_endpoint = node["api_endpoint"]
-        hawk_id = node["id"].encode("ascii")
-        hawk_key = node["key"].encode("ascii")
-        print "Deleting from", api_endpoint
+        hawk_id = str(node["id"])
+        hawk_key = str(node["key"])
+        print("Deleting from", api_endpoint)
         req = requests.Request("DELETE", api_endpoint).prepare()
         hawkauthlib.sign_request(req, hawk_id, hawk_key)
         r = requests.session().send(req)
         r.raise_for_status()
-        print r
+        print(r)
     finally:
-        s.destroy_session()    
+        s.destroy_session()
 
 
 if __name__ == "__main__":
