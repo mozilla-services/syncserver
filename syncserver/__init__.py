@@ -57,12 +57,11 @@ def includeme(config):
     if secret is None:
         secret = generate_random_hex_key(64)
     sqluri = settings.get("syncserver.sqluri")
-    sync_database_url = ""
     if sqluri is None:
         rootdir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         sqluri = "sqlite:///" + os.path.join(rootdir, "syncserver.db")
     else:
-        sync_database_url = "SYNC_DATABASE_URL=%s " % (sqluri, )
+        os.environ['SYNC_DATABASE_URL'] = sqluri
 
     # Automagically configure from IdP if one is given.
     idp = settings.get("syncserver.identity_provider")
@@ -160,7 +159,8 @@ def includeme(config):
     # Include the relevant sub-packages.
     config.scan("syncserver", ignore=["syncserver.wsgi_app"])
 
-    subprocess.call("%sSYNC_MASTER_SECRET=%s /usr/bin/env sh run-syncstorage-rs.sh &" % (sync_database_url, secret, ), shell=True)
+    os.environ['SYNC_MASTER_SECRET'] = secret
+    subprocess.call("/usr/bin/env sh run-syncstorage-rs.sh &", shell=True)
 
     config.include("tokenserver", route_prefix="/token")
 
