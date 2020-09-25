@@ -24,8 +24,10 @@ all: build
 .PHONY: build
 build: | $(ENV)/COMPLETE
 $(ENV)/COMPLETE: requirements.txt
-	$(VIRTUALENV) $(ENV)
-	$(INSTALL) -i https://pypi.python.org/simple -U pip
+	# Install the latest Python 2 compatible setuptools manually:
+	# https://github.com/mozilla-services/syncserver/issues/239
+	$(VIRTUALENV) $(ENV) --no-setuptools
+	$(INSTALL) -U "setuptools<45"
 	$(INSTALL) -r requirements.txt
 	$(ENV)/bin/python ./setup.py develop
 	touch $(ENV)/COMPLETE
@@ -36,7 +38,7 @@ test: | $(TOOLS)
 	$(ENV)/bin/nosetests -s syncstorage.tests
 	# Tokenserver tests currently broken due to incorrect file paths
 	# $(ENV)/bin/nosetests -s tokenserver.tests
-	
+
 	# Test against a running server.
 	$(ENV)/bin/gunicorn --paste syncserver/tests.ini 2> /dev/null & SERVER_PID=$$!; \
 	sleep 2; \
