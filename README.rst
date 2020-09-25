@@ -1,6 +1,8 @@
 Run-Your-Own Firefox Sync Server
 ================================
 
+Note: For the duration of Q4 2020 this documentation will be revised. This situation will only be temporary until tokenserver is ported to rust and this documentation is rewritten to leave out the old dependencies.
+
 .. image:: https://circleci.com/gh/mozilla-services/syncserver/tree/master.svg?style=svg
    :target: https://circleci.com/gh/mozilla-services/syncserver/tree/master
 
@@ -8,7 +10,7 @@ Run-Your-Own Firefox Sync Server
    :target: https://hub.docker.com/r/mozilla/syncserver/
 
 This is an all-in-one package for running a self-hosted Firefox Sync server.
-It bundles the "tokenserver" project for authentication and the "syncstorage"
+It bundles the "tokenserver" project for authentication and the "syncstorage-rs"
 project for storage, to produce a single stand-alone webapp.
 
 Complete installation instructions are available at:
@@ -34,6 +36,18 @@ following packages (or similar, depending on your operating system) installed:
 - musl-dev
 - ncurses-dev
 - openssl-dev
+
+syncstorage-rs uses the following additional dependencies:
+
+- cmake
+- golang
+- libcurl4-openssl-dev
+- libssl-dev
+- pkg-config
+- Rust stable
+- MySQL 5.7 (or compatible)
+    - libmysqlclient (brew install mysql on macOS, apt install libmysqlclient-dev on Ubuntu)
+
 
 Take a checkout of this repository, then run "make build" to pull in the
 necessary python package dependencies::
