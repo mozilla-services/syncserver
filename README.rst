@@ -1,7 +1,13 @@
 Run-Your-Own Firefox Sync Server
 ================================
 
-Note: For the duration of Q4 2020 this documentation will be revised. This situation will only be temporary until tokenserver is ported to rust and this documentation is rewritten to leave out the old dependencies.
+Note
+----
+
+For the duration of Q4 2020 this documentation will be revised. This situation will only be temporary until tokenserver is ported to rust and this documentation is rewritten to leave out the old dependencies.
+
+About syncserver
+----------------
 
 .. image:: https://circleci.com/gh/mozilla-services/syncserver/tree/master.svg?style=svg
    :target: https://circleci.com/gh/mozilla-services/syncserver/tree/master
@@ -44,7 +50,7 @@ syncstorage-rs uses the following additional dependencies:
 - libcurl4-openssl-dev
 - libssl-dev
 - pkg-config
-- Rust stable
+- Rust stable https://rustup.rs/
 - MySQL 5.7 (or compatible)
     - libmysqlclient (brew install mysql on macOS, apt install libmysqlclient-dev on Ubuntu)
 
