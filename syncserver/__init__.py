@@ -5,6 +5,7 @@
 import binascii
 import os
 import logging
+import subprocess
 try:
     from urlparse import urlparse, urlunparse, urljoin
 except ImportError:
@@ -59,6 +60,8 @@ def includeme(config):
     if sqluri is None:
         rootdir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
         sqluri = "sqlite:///" + os.path.join(rootdir, "syncserver.db")
+    else:
+        os.environ['SYNC_DATABASE_URL'] = sqluri
 
     # Automagically configure from IdP if one is given.
     idp = settings.get("syncserver.identity_provider")
@@ -155,7 +158,10 @@ def includeme(config):
 
     # Include the relevant sub-packages.
     config.scan("syncserver", ignore=["syncserver.wsgi_app"])
-    config.include("syncstorage", route_prefix="/storage")
+
+    os.environ['SYNC_MASTER_SECRET'] = secret
+    subprocess.call("/usr/bin/env sh run-syncstorage-rs.sh &", shell=True)
+
     config.include("tokenserver", route_prefix="/token")
 
     # Add a top-level "it works!" view.
