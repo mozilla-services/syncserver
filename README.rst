@@ -46,13 +46,13 @@ following packages (or similar, depending on your operating system) installed:
 syncstorage-rs uses the following additional dependencies:
 
 - cmake
-- golang
+- golang: https://golang.org/doc/install
 - libcurl4-openssl-dev
 - libssl-dev
 - pkg-config
-- Rust stable https://rustup.rs/
+- Rust stable: https://rustup.rs/
 - MySQL 5.7 (or compatible)
-    - libmysqlclient (brew install mysql on macOS, apt install libmysqlclient-dev on Ubuntu)
+    - libmysqlclient ("brew install mysql" on macOS, "apt install libmysqlclient-dev" on Ubuntu, "apt install libmariadb-dev-compat" on Debian)
 
 
 Take a checkout of this repository, then run "make build" to pull in the
