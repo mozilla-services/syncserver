@@ -1,4 +1,14 @@
-version: 2
+version: 2.1
+defaults:
+  docker_login: &docker_login
+    run:
+      name: Login to Dockerhub
+      command: |
+        if [ "${DOCKER_USER}" == "" ] || [ "${DOCKER_PASS}" == "" ]; then
+          echo "Skipping Login to Dockerhub, credentials not available."
+        else
+          echo "${DOCKER_PASS}" | docker login -u="${DOCKER_USER}" --password-stdin
+        fi
 jobs:
   build:
     docker:
