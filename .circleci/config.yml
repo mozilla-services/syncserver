@@ -1,5 +1,31 @@
 version: 2
 jobs:
+  test:
+    docker:
+      - image: debian:stable-slim
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+    working_directory: /app
+    steps:
+      - run:
+          name: Install Docker build dependencies
+          command: |
+            apt update
+            apt install -y git python-pip python2.7 build-essential python2.7-dev default-libmysqlclient-dev default-mysql-client
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: install
+          command: |
+            python2.7 --version
+            pip install virtualenv
+            make build
+      - run:
+          name: test
+          command: |
+            make test
+
   build:
     docker:
       - image: circleci/python
@@ -57,6 +83,11 @@ workflows:
 
   build-test-push:
     jobs:
+      - test:
+          filters:
+            tags:
+              only: /.*/
+
       - build:
           filters:
             tags:
