@@ -13,7 +13,7 @@ COPY ./dev-requirements.txt /app/dev-requirements.txt
 # install the base set of libraries if they're not present.
 # NOTE: please update the README to include any changes.
 RUN apk --no-cache update \
-    && apk add bash dumb-init gcc libstdc++ libffi-dev make mysql-dev musl-dev ncurses-dev openssl-dev g++ \
+    && apk add bash dumb-init gcc libstdc++ libffi-dev make mysql-dev musl-dev ncurses-dev openssl-dev g++ postgresql-dev \
     && pip install --upgrade pip \
     && pip install --upgrade --no-cache-dir -r requirements.txt \
     && pip install --upgrade --no-cache-dir -r dev-requirements.txt \
