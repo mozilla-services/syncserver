@@ -195,8 +195,8 @@ to the Mozilla-hosted storage service
 and would like to remove it,
 you can use the following script to do so::
 
-    $ pip install PyFxA
-    $ python ./bin/delete_user_data.py user@example.com
+    $ git clone https://github.com/mozilla-services/syncserver
+    $ python ./syncserver/bin/delete_user_data.py user@example.com
 
 
 Questions, Feedback
