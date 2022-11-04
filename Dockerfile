@@ -25,6 +25,9 @@ RUN python ./setup.py develop
 # run as non priviledged user
 USER app
 
+# expose the default http port
+EXPOSE 5000
+
 # run the server by default
 ENTRYPOINT ["/usr/bin/dumb-init", "/app/docker-entrypoint.sh"]
 CMD ["server"]
