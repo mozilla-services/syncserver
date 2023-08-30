@@ -7,7 +7,11 @@ Run-Your-Own Firefox Sync Server
 .. image:: https://img.shields.io/docker/automated/mozilla-services/syncserver.svg?style=flat-square
    :target: https://hub.docker.com/r/mozilla/syncserver/
 
-**Note that this repository is no longer being maintained**. Use this at your own risk, and
+**Note that this repository is no longer being maintained**.
+
+The Firefox Sync Server has been rewritten in Rust, and the new project can be found here:
+   https://github.com/mozilla-services/syncstorage-rs
+Use this at your own risk, and
 with the understanding that it is not being maintained, work is being done on its replacement,
 and that no support or assistance will be offered.
 
